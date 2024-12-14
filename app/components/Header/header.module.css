@@ -1,0 +1,31 @@
+.header_container {
+    display: flex;
+    justify-content: space-between;
+    padding: 20px 0;
+    align-items: center;
+}
+.logoutbtn {
+    position: absolute;
+    padding: 5px 10px;
+    border: 1px solid #c9c9c9;
+    cursor: pointer;
+}
+.menu p {
+    position: relative;
+    cursor: pointer;
+}
+.menu p::after {
+    content: '';
+    width: 7px;
+    height: 7px;
+    border-bottom: 2px solid #d0343e;
+    border-left: 2px solid #d0343e;
+    position: absolute;
+    right: -15px;
+    transform: rotate(-45deg);
+    transition: all 0.3s ease-in-out;
+    top: 6px;
+}
+.menu p.toggled::after {
+    transform: rotate(135deg);
+}

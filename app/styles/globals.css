@@ -1,0 +1,125 @@
+:root {
+    --primaryColor: #1d4593;
+    --secondaryColor: #f05b21;
+    --white: #fff;
+    ---black: #000;
+}
+
+* {
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+    line-height: 1.4;
+}
+
+html {
+    font-size: 16px;
+}
+
+/* Headings */
+h1,
+.h1 {
+    font-size: 3rem;
+    font-weight: 700;
+}
+
+h2,
+.h2 {
+    font-size: 2.5rem;
+    font-weight: 700;
+}
+
+h3,
+.h3 {
+    font-size: 1.75rem;
+    font-weight: 700;
+}
+
+/* Margins */
+.mb-2 {
+    margin-bottom: 2rem;
+}
+
+.mt-2 {
+    margin-top: 2rem !important;
+}
+
+.container {
+    max-width: 90%;
+    margin: 0 auto;
+}
+
+input:focus {
+    outline: none;
+}
+
+.btn {
+    background-color: var(--primaryColor);
+    padding: 12px 40px;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 400;
+    border: 1px solid var(--primaryColor);
+    color: var(--white);
+    max-width: 250px;
+    cursor: pointer;
+}
+
+
+/* Table */
+table {
+    border: 1px solid #c9c9c9;
+    border-radius: 8px;
+    box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+    margin-bottom: 25px;
+}
+
+table tr,
+table tr th,
+table tr td {
+    padding: 15px 10px;
+    border: 1px solid #c9c9c9;
+    border-collapse: separate;
+}
+
+table .p-column-header-content {
+    gap: 10px;
+}
+
+/* Form Elements */
+.form_elements {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    grid-row-gap: 1.5rem;
+    grid-column-gap: 2rem;
+}
+
+.form_element {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 1.5rem;
+    flex-direction: column;
+}
+
+.form_elements .submit_btn_element {
+    grid-column: 1 / -1;
+}
+
+.form_element label {
+    font-size: 1.125rem;
+}
+
+.form_element input {
+    font-family: Work Sans, Work Sans Fallback;
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid #c9c9c9;
+    font-size: 0.875rem;
+    color: #464646;
+}
+
+.error-message {
+    color: #951b1b;
+    font-weight: 500;
+}
+

@@ -1,0 +1,9 @@
+.dashboard {
+    margin-top: 2.5rem;
+}
+.dashboard_block {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2.5rem;
+}
