@@ -4,5 +4,56 @@ http://localhost:3000/admin/dashboard -- data displaying properly ( edit functio
 http://localhost:3000/admin/client-creation -- form working with validations
 http://localhost:3000/admin/client-user-creation  -- form working with validations
 
+Client location exclusion - not mandatory field (done)
+Call ads phone number - increment not needed (done)
+Landing page URL = "https://www" prefix mandatory
+Youtube page URL = hide (done)
+Platform - Only show search for now (done)
+Highlight errors (done)
+Client name should be auto filled in client campaign creation screen (done)
+logout btn color change - sayali maam  (done)
+latitude and longitude requreid 
 
-test85 test85 test85
+------------
+headlines character limit to be displayed
+descriptions character limit to be displayed
+
+Headlines: 3–15 headlines, each with a maximum of 30 characters
+Descriptions: 2–4 descriptions, each with a maximum of 90 characters
+
+
+http://localhost:3000/client/campaign-creation
+--> by default search campaign selected (done)
+
+
+
+--------------------------------
+
+COE FORM
+
+client name - disply
+campaign name - disply
+start & end date - disply + edit
+platform - disply
+call ads phone number - disply
+landing page url - 
+bidding strategy - hardcode
+network settings - hardcode
+industry - disply
+sub-industry -  disply
+ads location - disply + edit
+drop down 
+	city
+	state
+	pincode
+	radius
+	latitude
+	longitude
+Keywords - disply + select 
+Ad name - text field
+final url - disply
+headline - disply
+description - disply
+client_comment - disply
+total budget - disply
+daily budget - calculate 

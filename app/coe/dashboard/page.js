@@ -16,7 +16,10 @@ export default function Page() {
   const rows = 10;
   const [first, setFirst] = useState(0);
 
-  const storedUserId = sessionStorage.getItem("user_id");
+  useEffect(() => {
+    const storedUserId = sessionStorage.getItem("user_id");
+
+  }, [])
   useEffect(() => {
     const fetchCampaigns = async () => {
       try {

@@ -2,7 +2,7 @@
 import Header from "./components/Header/Header";
 import "@/app/styles/globals.css";
 
-import { Work_Sans } from '@next/font/google';
+import { Work_Sans } from 'next/font/google';
 
 const workSans = Work_Sans({
   subsets: ['latin'],

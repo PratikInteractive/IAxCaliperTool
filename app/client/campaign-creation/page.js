@@ -19,6 +19,8 @@ const Page = () => {
   });
   const [userId, setUserId] = useState(null);
 
+
+  
   const platformOptions = [
     { value: "Search", label: "Search" },
     // { value: "P-Max", label: "P-Max" },
@@ -45,10 +47,11 @@ const Page = () => {
     setDescriptions(updatedDescriptions);
   };
 
-  const storedUserId = sessionStorage.getItem("user_id");
+ 
   useEffect(() => {
     const fetchUrlDetails = async () => {
       try {
+        const storedUserId = sessionStorage.getItem("user_id"); 
         const response = await axios.post(
           `${apiUrl}caliper/digitalEntrant/caliperSelfServeApi.jsp?action=viewUrlDetails`,
           {
@@ -88,6 +91,8 @@ const Page = () => {
   const handleSubmit = async (event) => {
     event.preventDefault();
 
+    
+    const storedUserId = sessionStorage.getItem("user_id");
     const formData = new FormData(formRef.current);
 
     const payload = {

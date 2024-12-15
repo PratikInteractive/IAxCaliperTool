@@ -1,5 +1,5 @@
 'use client';
-import React , {useState} from 'react';
+import React, { useState, useEffect } from 'react';
 import logo from '@/app/assets/logo.svg';
 import Image from 'next/image';
 import styles from './header.module.css';
@@ -7,52 +7,63 @@ import { usePathname } from 'next/navigation';
 import Swal from 'sweetalert2';
 
 const Header = () => {
+  const [showLogout, setShowLogout] = useState(false);
+  const [userName, setUserName] = useState(null); 
+  const currentPath = usePathname(); 
 
-    const [showLogout, setShowLogout] = useState(false);
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const storedUser = sessionStorage.getItem('user_id');
+      console.log("Stored USer", storedUser)
+      if (storedUser) {
+        setUserName(storedUser);
+      } else {
+        console.log('No user_id found in sessionStorage');
+      }
+    }
+  }, []);
 
-  const currentPath = usePathname(); // Get the current path
-  const userName = sessionStorage.getItem('user_id');
-
-
-  // Only show the header if the current path is not "/login"
   if (currentPath === "/login") {
-      return null;
+    return null;
   }
 
   const toggleLogout = () => {
-    setShowLogout((prevState) => !prevState); // Toggle the logout visibility
+    setShowLogout((prevState) => !prevState); 
   };
 
   const logout = () => {
-    
     Swal.fire({
-        text: 'Please Click Ok to logout',
-        icon: 'warning',
-        confirmButtonText: 'OK',
-      }).then((result) => {
-        if (result.isConfirmed) {
-            sessionStorage.removeItem("user_id");
-          window.location.href = "/login";
-          
+      text: 'Please Click Ok to logout',
+      icon: 'warning',
+      confirmButtonText: 'OK',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        if (typeof window !== 'undefined') {
+          sessionStorage.removeItem("user_id");
         }
-      });
-  }
+        window.location.href = "/login";
+      }
+    });
+  };
 
   return (
     <>
-    <header className={styles.header}>
+      <header className={styles.header}>
         <div className={`container ${styles.header_container}`}>
-            <div className='logo'>
-                <Image src={logo} width={200} height={80} alt='logo' />
-            </div>
-            <div className={styles.menu}>
-                <p onClick={toggleLogout} className={showLogout ? `${styles.toggled}` : ''}>User: {userName}</p>
-                {showLogout && <span className={styles.logoutbtn} onClick={logout}>Logout</span>}
-            </div>
+          <div className="logo">
+            <Image src={logo} width={200} height={80} alt="logo" />
+          </div>
+          <div className={styles.menu}>
+            <p onClick={toggleLogout} className={showLogout ? `${styles.toggled}` : ''}>
+              {/* User: {userName || 'Guest'} */}
+              Welcome User
+            </p>
+            {showLogout && <span className={styles.logoutbtn} onClick={logout}>Logout</span>}
+          </div>
         </div>
-    </header>
+      </header>
     </>
-  )
-}
+  );
+};
 
-export default Header
+export default Header;
