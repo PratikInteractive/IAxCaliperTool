@@ -23,11 +23,7 @@ const Page = () => {
   const [clientOptions, setClientOptions] = useState([]);
   const [userId, setUserId] = useState(null);
 
-  const keywordOptions = [
-    { value: "Plan", label: "Plan" },
-    { value: "Design", label: "Design" },
-    { value: "Quotes", label: "Quotes" },
-  ];
+  const [keywordOptions, setKeywordOptions] = useState([]);
 
   const handleClientBusinessNameChange = (selectedOption) => {
     const selectedValue = selectedOption ? selectedOption.value : "";
@@ -46,10 +42,7 @@ const Page = () => {
   const handleSelectChange = (field, selectedOption) => {
     setFormData((prevData) => ({
       ...prevData,
-      [field]:
-        field === "keywords"
-          ? selectedOption.map((option) => option.value)
-          : selectedOption?.value || "",
+      [field]: field === "keywords" ? selectedOption : selectedOption?.value || "",
     }));
   };
 
@@ -76,6 +69,11 @@ const Page = () => {
       return;
     }
 
+    const transformedKeywords = formData.keywords.map((keywordObj) => ({
+      keyword: keywordObj.value,
+      searchVolume: keywordObj.searchVolume,
+    }));
+
     const dataToSubmit = {
       loggedInUser: userId,
       newUserId: formData.userId,
@@ -84,7 +82,7 @@ const Page = () => {
       password: formData.password,
       clientType: formData.clientType,
       clientName: formData.clientBusinessName,
-      keywords: formData.keywords,
+      keywords: transformedKeywords,
       clientEmail: formData.clientEmail,
       googleAccountId: formData.googleAccountId,
       loginCustomerId: formData.loginCustomerId,
@@ -175,6 +173,15 @@ const Page = () => {
 
         if (response.data.result === "success") {
           console.log("Fetched Keywords details:", response.data);
+        const fetchedKeywords = response.data.caliperBaseKeywords?.map(
+          (item) => ({
+            value: item.keyword,
+            label: `${item.keyword} (Search Volume: ${item.searchVolume})`,
+            searchVolume: item.searchVolume, 
+          })
+        );
+
+        setKeywordOptions(fetchedKeywords || []); 
         } else {
           console.error("Error:", response.data.message);
         }

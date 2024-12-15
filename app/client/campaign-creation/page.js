@@ -237,6 +237,7 @@ const Page = () => {
               name="CampaignBudget"
               placeholder="Specify Budget"
               required
+              min={0}
             />
           </div>
           <div className="form_element">
