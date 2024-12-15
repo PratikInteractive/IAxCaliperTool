@@ -6,6 +6,9 @@ import Select from "react-select";
 import Swal from "sweetalert2";
 
 const Page = () => {
+  
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+
   const [formData, setFormData] = useState({
     clientBusinessName: "",
     userId: "",
@@ -152,6 +155,37 @@ const Page = () => {
       fetchData();
     }
   }, [userId]);
+
+  // Fetch Keywords
+  useEffect(() => {
+    const fetchKeywords = async () => {
+      try {
+        const storedUserId = sessionStorage.getItem("user_id"); 
+        const response = await axios.post(
+          `${apiUrl}caliper/digitalEntrant/caliperSelfServeApi.jsp?action=viewKeywords`,
+          {
+            loggedInUser: storedUserId,
+          },
+          {
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        );
+
+        if (response.data.result === "success") {
+          console.log("Fetched Keywords details:", response.data);
+        } else {
+          console.error("Error:", response.data.message);
+        }
+      } catch (error) {
+        console.error("Error fetching URL details:", error.message);
+      } finally {
+      }
+    };
+
+    fetchKeywords();
+  }, []);
 
   return (
     <div className="container mt-2">

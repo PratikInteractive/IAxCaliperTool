@@ -18,7 +18,7 @@ const Page = () => {
     youtubeUrl: "",
   });
   const [userId, setUserId] = useState(null);
-
+  const [currentDate, setCurrentDate] = useState("");
 
   
   const platformOptions = [
@@ -48,6 +48,14 @@ const Page = () => {
   };
 
  
+  useEffect(() => {
+    // Get the current date in the format YYYY-MM-DD
+    const today = new Date();
+    const formattedDate = today.toISOString().split("T")[0]; // e.g., "2024-12-15"
+    setCurrentDate(formattedDate);
+  }, []);
+
+
   useEffect(() => {
     const fetchUrlDetails = async () => {
       try {
@@ -216,11 +224,11 @@ const Page = () => {
           </div>
           <div className="form_element">
             <label>Start Date</label>
-            <input type="date" name="startDate" required />
+            <input type="date" name="startDate" min={currentDate} required />
           </div>
           <div className="form_element">
             <label>End Date</label>
-            <input type="date" name="endDate" required />
+            <input type="date" name="endDate"  min={currentDate} required />
           </div>
           <div className="form_element">
             <label>Campaign Budget</label>

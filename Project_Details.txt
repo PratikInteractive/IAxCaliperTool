@@ -4,28 +4,38 @@ http://localhost:3000/admin/dashboard -- data displaying properly ( edit functio
 http://localhost:3000/admin/client-creation -- form working with validations
 http://localhost:3000/admin/client-user-creation  -- form working with validations
 
-Client location exclusion - not mandatory field (done1)
-Call ads phone number - increment not needed (done)
+
+Client location exclusion - not mandatory field (done - saturday)
+Call ads phone number - increment not needed (done - saturday)
+=======
+
 Landing page URL = "https://www" prefix mandatory
-Youtube page URL = hide (done)
-Platform - Only show search for now (done)
-Highlight errors (done)
-Client name should be auto filled in client campaign creation screen (done)
-logout btn color change - sayali maam  (done)
-latitude and longitude requreid 
+Youtube page URL = hide (done - saturday)
+Platform - Only show search for now (done - saturday)
+Highlight errors (done - saturday)
+Client name should be auto filled in client campaign creation screen (done - saturday)
+logout btn color change - sayali (done - saturday)
+latitude and longitude required (done - saturday)
 
 ------------
-headlines character limit to be displayed
-descriptions character limit to be displayed
+headlines character limit to be displayed (done - sunday)
+descriptions character limit to be displayed (done - sunday)
 
-Headlines: 3–15 headlines, each with a maximum of 30 characters
-Descriptions: 2–4 descriptions, each with a maximum of 90 characters
+Headlines: 3–15 headlines, each with a maximum of 30 characters (done - sunday)
+Descriptions: 2–4 descriptions, each with a maximum of 90 characters  (done - sunday)
 
 
 http://localhost:3000/client/campaign-creation
---> by default search campaign selected (done)
+--> by default search campaign selected (done - saturday)
 
 
+
+http://15.207.141.243:8080/web/pages/caliper/digitalEntrant/caliperSelfServeApi.jsp?action=viewKeywords ( key words api received on sunday 12 noon )
+
+-- keywords to be passed in object
+
+
+-- SSL issue ( pending from server team -- Causing CI/CD deployment issue )
 
 --------------------------------
 
