@@ -66,7 +66,7 @@ export default function Page() {
         <Column field="campaignName" header="Campaign Name" sortable />
         <Column field="startDate" header="Start Date" />
         <Column field="endDate" header="End Date" />
-        <Column field="dailyBudget" header="Daily Budget" sortable />
+        <Column field="dailyBudget" header="Total Budget" sortable />
         <Column field="status" header="Status" />
         <Column field="comment" header="Comments" />
         <Column
