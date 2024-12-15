@@ -11,6 +11,8 @@ const Header = () => {
     const [showLogout, setShowLogout] = useState(false);
 
   const currentPath = usePathname(); // Get the current path
+  const userName = sessionStorage.getItem('user_id');
+
 
   // Only show the header if the current path is not "/login"
   if (currentPath === "/login") {
@@ -38,13 +40,13 @@ const Header = () => {
 
   return (
     <>
-    <header>
+    <header className={styles.header}>
         <div className={`container ${styles.header_container}`}>
             <div className='logo'>
                 <Image src={logo} width={200} height={80} alt='logo' />
             </div>
             <div className={styles.menu}>
-                <p onClick={toggleLogout} className={showLogout ? `${styles.toggled}` : ''}>Profile</p>
+                <p onClick={toggleLogout} className={showLogout ? `${styles.toggled}` : ''}>User: {userName}</p>
                 {showLogout && <span className={styles.logoutbtn} onClick={logout}>Logout</span>}
             </div>
         </div>

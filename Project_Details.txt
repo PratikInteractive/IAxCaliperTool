@@ -1,0 +1,8 @@
+http://localhost:3000/login -- done with validations for admin, client and coe
+http://localhost:3000/admin/dashboard -- done with logout session functionality
+http://localhost:3000/admin/dashboard -- data displaying properly ( edit functionality pending )
+http://localhost:3000/admin/client-creation -- form working with validations
+http://localhost:3000/admin/client-user-creation  -- form working with validations
+
+
+test85 test85 test85

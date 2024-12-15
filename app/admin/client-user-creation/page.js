@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import Select from "react-select";
-import Swal from 'sweetalert2';
+import Swal from "sweetalert2";
 
 const Page = () => {
   const [formData, setFormData] = useState({
@@ -95,17 +95,30 @@ const Page = () => {
         dataToSubmit
       );
       console.log("Response:", response.data);
-    //   window.location.href = "/admin/dashboard";
-    Swal.fire({
-        title: 'Success!',
-        text: 'Client Created Successfully!',
-        icon: 'success',
-        confirmButtonText: 'OK',
-      }).then((result) => {
-        if (result.isConfirmed) {
-          window.location.href = "/admin/dashboard";
-        }
-      });
+      //   window.location.href = "/admin/dashboard";
+      if (response.data.result == "success") {
+        Swal.fire({
+          title: "Success!",
+          text: "Client Created Successfully!",
+          icon: "success",
+          confirmButtonText: "OK",
+        }).then((result) => {
+          if (result.isConfirmed) {
+            window.location.href = "/admin/dashboard";
+          }
+        });
+      } else {
+        Swal.fire({
+          title: "Something went wrong!",
+          text: response.data.message,
+          icon: "error",
+          confirmButtonText: "OK",
+        }).then((result) => {
+          if (result.isConfirmed) {
+            window.location.href = "/admin/client-user-creation";
+          }
+        });
+      }
     } catch (error) {
       console.error("Error submitting form:", error);
     }
@@ -209,30 +222,7 @@ const Page = () => {
             />
           </div>
 
-          <div className="form_element">
-            <label>Google Account ID:</label>
-            <input
-              type="text"
-              name="googleAccountId"
-              value={formData.googleAccountId}
-              onChange={handleChange}
-              required
-              placeholder="Please Enter (required)"
-            />
-          </div>
-
-          <div className="form_element">
-            <label>Login Customer Id: </label>
-            <input
-              type="text"
-              name="loginCustomerId"
-              value={formData.loginCustomerId}
-              onChange={handleChange}
-              required
-              placeholder="Please Enter (required)"
-            />
-          </div>
-
+          
           <div className="form_element">
             <label>Client Code:</label>
             <input
@@ -244,7 +234,31 @@ const Page = () => {
               placeholder="Please Enter (required)"
             />
           </div>
+        
 
+
+          <div className="form_element">
+            <label>Google Account ID (unique):</label>
+            <input
+              type="text"
+              name="googleAccountId"
+              value={formData.googleAccountId}
+              onChange={handleChange}
+              required
+              placeholder="Please Enter (required)"
+            />
+          </div>
+          <div className="form_element">
+            <label>Login Customer Id: </label>
+            <input
+              type="text"
+              name="loginCustomerId"
+              value={formData.loginCustomerId}
+              onChange={handleChange}
+              required
+              placeholder="Please Enter (required)"
+            />
+          </div>
           <div className="form_element select_form_element">
             <label>Select Keywords</label>
             <Select

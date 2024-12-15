@@ -18,8 +18,6 @@ export default function Page() {
 
   const storedUserId = sessionStorage.getItem("user_id");
   useEffect(() => {
-    
-
     const fetchCampaigns = async () => {
       try {
         const payload = {
@@ -42,7 +40,6 @@ export default function Page() {
 
     fetchCampaigns();
   }, []);
-
 
   return (
     <div className={`container ${styles.dashboard}`}>

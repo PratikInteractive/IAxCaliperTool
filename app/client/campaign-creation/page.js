@@ -4,46 +4,55 @@ import React, { useEffect, useRef, useState } from "react";
 import Select from "react-select";
 import axios from "axios";
 import { useRouter } from "next/navigation";
-import Swal from 'sweetalert2';
+import Swal from "sweetalert2";
 
 const Page = () => {
-
   const apiUrl = process.env.NEXT_PUBLIC_API_URL;
-    const router = useRouter(); 
+  const router = useRouter();
   const formRef = useRef(null);
   const [headlines, setHeadlines] = useState([""]);
-  const [selectedPlatform, setSelectedPlatform] = useState(null);
+  const [descriptions, setDescriptions] = useState([""]);
   const [formData, setFormData] = useState({
+    clientName: "",
     landingUrl: "",
     youtubeUrl: "",
-  }); 
-    const [userId, setUserId] = useState(null);
-  
+  });
+  const [userId, setUserId] = useState(null);
 
   const platformOptions = [
     { value: "Search", label: "Search" },
-    { value: "P-Max", label: "P-Max" },
+    // { value: "P-Max", label: "P-Max" },
   ];
+  const [selectedPlatform, setSelectedPlatform] = useState(platformOptions[0]);
 
   const handleAddHeadline = () => {
     setHeadlines([...headlines, ""]);
   };
-  
+
   const handleHeadlineChange = (index, value) => {
     const updatedHeadlines = [...headlines];
     updatedHeadlines[index] = value;
     setHeadlines(updatedHeadlines);
   };
 
+  const handleDescription = () => {
+    setDescriptions([...descriptions, ""]);
+  };
+
+  const handleDescriptionsChange = (index, value) => {
+    const updatedDescriptions = [...descriptions];
+    updatedDescriptions[index] = value;
+    setDescriptions(updatedDescriptions);
+  };
+
   const storedUserId = sessionStorage.getItem("user_id");
   useEffect(() => {
-
     const fetchUrlDetails = async () => {
       try {
         const response = await axios.post(
           `${apiUrl}caliper/digitalEntrant/caliperSelfServeApi.jsp?action=viewUrlDetails`,
           {
-            loggedInUser: storedUserId, 
+            loggedInUser: storedUserId,
           },
           {
             headers: {
@@ -54,6 +63,7 @@ const Page = () => {
 
         if (response.data.result === "success") {
           setFormData({
+            clientName: response.data.clientName || "",
             landingUrl: response.data.landingPageUrl || "",
             youtubeUrl: response.data.youtubeVideoUrl || "",
           });
@@ -68,8 +78,7 @@ const Page = () => {
     };
 
     fetchUrlDetails();
-  }, []); 
-
+  }, []);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -82,21 +91,44 @@ const Page = () => {
     const formData = new FormData(formRef.current);
 
     const payload = {
-      loggedInUser: storedUserId, 
+      loggedInUser: storedUserId,
       userRole: "caliper_client",
-      action: "createClientCampaign", 
-      clientName: formData.get("clientName"), 
-      campaignName: formData.get("CampaignName"), 
-      startDate: formData.get("startDate"), 
-      endDate: formData.get("endDate"), 
-      campaignBudget: formData.get("CampaignBudget"), 
-      landingPageUrl: formData.get("landingUrl"), 
-      youtubeUrl: formData.get("youtubeUrl"), 
-      headlines, 
-      descriptions: formData.get("uploadDescriptions")?.split("|"), 
-      platform: selectedPlatform?.value, 
-      clientComment: formData.get("clientComment"), 
+      action: "createClientCampaign",
+      clientName: formData.get("clientName"),
+      campaignName: formData.get("CampaignName"),
+      startDate: formData.get("startDate"),
+      endDate: formData.get("endDate"),
+      campaignBudget: formData.get("CampaignBudget"),
+      landingPageUrl: formData.get("landingUrl"),
+      youtubeUrl: "",
+      headlines,
+      descriptions,
+      platform: selectedPlatform?.value,
+      clientComment: formData.get("clientComment"),
     };
+
+
+    if (headlines.length < 3 || headlines.length > 15) {
+      Swal.fire({
+        title: "Validation Error",
+        text: "Please add between 3 and 15 headlines.",
+        icon: "warning",
+        confirmButtonText: "OK",
+      });
+      return;
+    }
+  
+    if (descriptions.length < 2 || descriptions.length > 4) {
+      Swal.fire({
+        title: "Validation Error",
+        text: "Please add between 2 and 4 descriptions.",
+        icon: "warning",
+        confirmButtonText: "OK",
+      });
+      return;
+    }
+
+    console.log("Payload Entry", payload);
 
     try {
       const response = await fetch(
@@ -116,18 +148,32 @@ const Page = () => {
         // alert("Form submitted successfully!");
         // router.push("/client/dashboard");
 
-        Swal.fire({
-          title: 'Success!',
-          text: 'Campaign Created Successfully!',
-          icon: 'success',
-          confirmButtonText: 'OK',
-        }).then((result) => {
-          if (result.isConfirmed) {
-            window.location.href = "/client/dashboard";
-          }
-        });
-
-
+        if (data.result == "success") {
+          console.log("Report", data.result);
+          // Start
+          Swal.fire({
+            title: "Success!",
+            text: "Campaign Created Successfully!",
+            icon: "success",
+            confirmButtonText: "OK",
+          }).then((result) => {
+            if (result.isConfirmed) {
+              window.location.href = "/client/dashboard";
+            }
+          });
+          // End
+        } else {
+          Swal.fire({
+            title: "Error!",
+            text: response.data.message,
+            icon: "warning",
+            confirmButtonText: "OK",
+          }).then((result) => {
+            if (result.isConfirmed) {
+              window.location.href = "/client/campaign-creation";
+            }
+          });
+        }
       } else {
         console.error("Failed to submit form:", response.statusText);
         alert("Failed to submit the form.");
@@ -142,113 +188,156 @@ const Page = () => {
     <div className="container mt-2">
       <h3 className="mb-2">Create New Campaign</h3>
       <div className="form_block">
-      <form
-        ref={formRef}
-        onSubmit={handleSubmit}
-        className="form_elements"
-      >
-        <div className="form_element">
-          <label>Client Name</label>
-          <input type="text" name="clientName" placeholder="Enter Client Name (required)" required />
-        </div>
-        <div className="form_element">
-          <label>Campaign Name</label>
-          <input type="text" name="CampaignName" placeholder="Enter Campaign Name (required)" required />
-        </div>
-        <div className="form_element">
-          <label>Start Date</label>
-          <input type="date" name="startDate" required />
-        </div>
-        <div className="form_element">
-          <label>End Date</label>
-          <input type="date" name="endDate" required />
-        </div>
-        <div className="form_element">
-          <label>Campaign Budget</label>
-          <input type="number" name="CampaignBudget" placeholder="Specify Budget" required />
-        </div>
-        <div className="form_element">
-        <label>Landing Page URL</label>
-          <input
-            type="url"
-            name="landingUrl"
-            value={formData.landingUrl}
-            onChange={handleInputChange}
-            placeholder="Enter URL (required)"
-            required
-          />
-          
-        </div>
-        <div className="form_element">
-        <label>YouTube Video URL</label>
-          <input
-            type="url"
-            name="youtubeUrl"
-            value={formData.youtubeUrl}
-            onChange={handleInputChange}
-            placeholder="Enter URL (required)"
-          />
-          
-        </div>
-     
-        <div className="form_element select_form_element">
-            <label>Platform</label>
-          <Select
-           options={platformOptions}
-            value={selectedPlatform}
-            onChange={setSelectedPlatform}
-            isClearable
-            styles={{
-              placeholder: (base) => ({
-                ...base,
-                display: "block",
-              }),
-            }}
-            placeholder="Please Select"
-          />
-        </div>
+        <form ref={formRef} onSubmit={handleSubmit} className="form_elements">
+          <div className="form_element">
+            <label>Client Name</label>
+            <input
+              name="clientName"
+              value={formData.clientName}
+              type="text"
+              placeholder="Enter Client Name (required)"
+              required
+              readOnly
+            />
+          </div>
+          <div className="form_element">
+            <label>Campaign Name</label>
+            <input
+              type="text"
+              name="CampaignName"
+              placeholder="Enter Campaign Name (required)"
+              required
+            />
+          </div>
+          <div className="form_element">
+            <label>Start Date</label>
+            <input type="date" name="startDate" required />
+          </div>
+          <div className="form_element">
+            <label>End Date</label>
+            <input type="date" name="endDate" required />
+          </div>
+          <div className="form_element">
+            <label>Campaign Budget</label>
+            <input
+              type="number"
+              name="CampaignBudget"
+              placeholder="Specify Budget"
+              required
+            />
+          </div>
+          <div className="form_element">
+            <label>Landing Page URL</label>
+            <input
+              type="url"
+              name="landingUrl"
+              value={formData.landingUrl}
+              onChange={handleInputChange}
+              placeholder="Enter URL (required)"
+              required
+            />
+          </div>
+          {/* <div className="form_element">
+            <label>YouTube Video URL</label>
+            <input
+              type="url"
+              name="youtubeUrl"
+              // value={formData.youtubeUrl}
+              value=""
+              onChange={handleInputChange}
+              placeholder="Enter URL (required)"
+            />
+          </div> */}
 
-        <div className="form_element">
-          <label>Client Comment</label>
-          <input type="text" name="clientComment" placeholder="Enter Comment" />
-        </div>
-        <div className="form_element headline_input">
-          <label>Upload Headlines</label>
-          {headlines.map((headline, index) => (
-            <div key={index} className="dynamicInput">
-              <input
-                type="text"
-                value={headline}
-                onChange={(e) => handleHeadlineChange(index, e.target.value)}
-                placeholder=""
-                required
-              />
+          <div className="form_element select_form_element">
+            <label>Platform</label>
+            <Select
+              options={platformOptions}
+              value={selectedPlatform}
+              onChange={setSelectedPlatform}
+              isClearable
+              styles={{
+                placeholder: (base) => ({
+                  ...base,
+                  display: "block",
+                }),
+              }}
+              placeholder="Please Select"
+            />
+          </div>
+
+          <div className="form_element">
+            <label>Client Comment</label>
+            <input
+              type="text"
+              name="clientComment"
+              placeholder="Enter Comment"
+            />
+          </div>
+          <div className="form_element form_element_headline">
+            <label>Upload Headlines*</label>
+            <div className="multiple_inputs">
+              <div className="input_blocks">
+                {headlines.map((headline, index) => (
+                  <div key={index} className="dynamic_input">
+                    <input
+                      type="text"
+                      value={headline}
+                      onChange={(e) =>
+                        handleHeadlineChange(index, e.target.value)
+                      }
+                      placeholder="Enter headline (max 30 chars)"
+                      maxLength={30} 
+                      required
+                    />
+                  </div>
+                ))}
+              </div>
+              <button
+                type="button"
+                onClick={handleAddHeadline}
+                className="btn add-btn"
+                disabled={headlines.length >= 15}
+              >
+                +
+              </button>
             </div>
-          ))}
-          <button
-            type="button"
-            onClick={handleAddHeadline}
-            className="btn add-btn"
-          >
-            Add Headline
-          </button>
-        </div>
-        <div className="form_element">
-        <label>Upload Descriptions</label>
-          <input
-            type="text"
-            name="uploadDescriptions"
-            placeholder="Enter Details (required)"
-            required
-          />
-          
-        </div>
-        <div className="form_element submit_btn_element">
-        <button type="submit" className="btn p-button p-component">
-          Proceed to pay
-        </button>
-        </div>
-      </form>
+          </div>
+          <div className="form_element form_element_descp">
+            <label>Upload Descriptions</label>
+            <div className="multiple_inputs">
+              <div className="input_blocks">
+                {descriptions.map((description, index) => (
+                  <div key={index} className="dynamic_input">
+                    <input
+                      type="text"
+                      value={description}
+                      onChange={(e) =>
+                        handleDescriptionsChange(index, e.target.value)
+                      }
+                      placeholder="Enter description (max 90 chars)"
+                      maxLength={90}
+                      required
+                    />
+                  </div>
+                ))}
+              </div>
+              <button
+                type="button"
+                onClick={handleDescription}
+                className="btn add-btn"
+                disabled={descriptions.length >= 4}
+              >
+                +
+              </button>
+            </div>
+          </div>
+          <div className="form_element submit_btn_element">
+            <button type="submit" className="btn p-button p-component">
+              Proceed to pay
+            </button>
+          </div>
+        </form>
       </div>
     </div>
   );

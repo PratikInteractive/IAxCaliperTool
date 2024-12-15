@@ -1,3 +1,6 @@
+.header {
+    box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 2px 6px 2px;
+}
 .header_container {
     display: flex;
     justify-content: space-between;
@@ -9,6 +12,11 @@
     padding: 5px 10px;
     border: 1px solid #c9c9c9;
     cursor: pointer;
+    background: #f05b21;
+    color: #fff;
+    display: block;
+    width: 140px;
+    text-align: center;
 }
 .menu p {
     position: relative;

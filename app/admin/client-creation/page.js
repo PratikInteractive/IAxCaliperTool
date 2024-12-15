@@ -27,12 +27,12 @@ const Page = () => {
   const [adPhoneError, setAdPhoneError] = useState("");
   const [industryData, setIndustryData] = useState({});
 
-  const [selectedPlatform, setSelectedPlatform] = useState(null);
-
+  
   const platformOptions = [
     { value: "Search", label: "Search" },
-    { value: "P-Max", label: "P-Max" },
+    // { value: "P-Max", label: "P-Max" },
   ];
+  const [selectedPlatform, setSelectedPlatform] = useState(platformOptions[0]);
 
   const [radOptions] = useState([
     { label: "KILOMETERS", value: "KILOMETERS" },
@@ -373,12 +373,11 @@ const Page = () => {
             )}
           </div>
           <div className="form_element">
-            <label>Client Location Exclusion</label>
+            <label>Client Location Exclusion (optional)</label>
             <input
               type="text"
               name="locationExclusion"
-              placeholder="Location Exclusion (required)"
-              required
+              placeholder="Location Exclusion"
             />
           </div>
           <div className="form_element">
@@ -400,21 +399,21 @@ const Page = () => {
             <label>Landing Page URL</label>
             <input type="text" name="landingPageUrl" placeholder="Landing Page URL (required)" required />
           </div>
-          <div className="form_element">
+          {/* <div className="form_element">
             <label>YouTube URL</label>
             <input type="text" name="youtubeUrl" placeholder="Youtube URL (optional)" />
-          </div>
+          </div> */}
           <div className="form_element">
             <label>Latitude</label>
-            <input type="number" step="any" name="latitude" placeholder="Latitude in decimal (optional)" />
+            <input type="number" step="any" name="latitude" placeholder="Latitude in decimal (required)" min="0" required />
           </div>
           <div className="form_element">
             <label>Longitude</label>
-            <input type="number" step="any" name="longitude" placeholder="Longitude in decimal (optional)" />
+            <input type="number" step="any" name="longitude" placeholder="Longitude in decimal (required)" min="0"  required />
           </div>
           <div className="form_element">
             <label>Radius</label>
-            <input type="number" name="radius" placeholder="Please add (required)" required/>
+            <input type="number" name="radius" placeholder="Please add (required)" required min="0" />
           </div>
           <div className="form_element select_form_element">
             <label>Select Radius</label>

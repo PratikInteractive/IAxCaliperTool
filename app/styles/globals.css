@@ -15,6 +15,9 @@
 html {
     font-size: 16px;
 }
+a {
+    text-decoration: none;
+}
 
 /* Headings */
 h1,
@@ -48,7 +51,9 @@ h3,
     max-width: 90%;
     margin: 0 auto;
 }
-
+input {
+    font-size: 0.875rem;
+}
 input:focus {
     outline: none;
 }
@@ -63,8 +68,14 @@ input:focus {
     color: var(--white);
     max-width: 250px;
     cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
-
+.btn.secondary {
+    background-color: var(--secondaryColor);
+    border: 1px solid var(--secondaryColor);
+}
 
 /* Table */
 table {
@@ -117,9 +128,37 @@ table .p-column-header-content {
     font-size: 0.875rem;
     color: #464646;
 }
+.form_element.form_element_headline {
+    grid-column: 1 / 1;
+}
+
 
 .error-message {
     color: #951b1b;
     font-weight: 500;
 }
 
+.multiple_inputs {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+}
+.multiple_inputs .input_blocks {
+    width: 90%;
+}
+.multiple_inputs .input_blocks input {
+    width: 100%;
+}
+.multiple_inputs button {
+    width: 5%;
+    height: 41px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: 500;
+    font-size: 1.25rem;
+
+}
+.multiple_inputs .dynamic_input {
+    margin-bottom: 15px;
+}
