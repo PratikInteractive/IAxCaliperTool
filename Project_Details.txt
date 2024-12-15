@@ -32,10 +32,19 @@ http://localhost:3000/client/campaign-creation
 
 http://15.207.141.243:8080/web/pages/caliper/digitalEntrant/caliperSelfServeApi.jsp?action=viewKeywords ( key words api received on sunday 12 noon )
 
--- keywords to be passed in object
-
+-- keywords to be passed in object  (done - sunday)
 
 -- SSL issue ( pending from server team -- Causing CI/CD deployment issue )
+
+-- campaign budget should not be in negative (done - sunday)
+
+-- CORS issue (pending Frontend)
+
+-- Forgot password ( phase 2 )
+
+-- Admin dashboard (client  edit functionality pending Frontend )
+
+-- /client/dashboard ( need to actions w/ backend )
 
 --------------------------------
 
