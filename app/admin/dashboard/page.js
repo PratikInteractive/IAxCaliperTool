@@ -7,13 +7,15 @@ import { Button } from "primereact/button";
 import axios from "axios";
 import Link from "next/link";
 import styles from "@/app/styles/dashboad.module.css"
-
+import { useRouter } from "next/navigation";
 
 export default function Page() {
   const [clients, setClients] = useState([]);
   const [loading, setLoading] = useState(true);
   const rows = 10;
   const [first, setFirst] = useState(0);
+
+  const router = useRouter()
 
   const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 
@@ -48,12 +50,17 @@ export default function Page() {
   
     fetchClients();
   }, []);
-
+  
+  // Edit Functionality
+  const handleEditClient = (clientName) => {
+    // console.log("Editing Client:", clientName); 
+    router.push(`/admin/edit-client?clientName=${encodeURIComponent(clientName)}`); 
+  };
 
   return (
     <div className={`container ${styles.dashboard}`}>
       <div className={styles.dashboard_block}>
-        <h2>Client List</h2>
+        <h2>Edit Client</h2>
         <Link href="/admin/client-creation">
           <Button className="btn primary">Create Client</Button>
         </Link>
@@ -75,26 +82,21 @@ export default function Page() {
         <Column field="clientEmail" header="Client Email" sortable />
         <Column field="clientType" header="Client Type" sortable />
         <Column field="googleAccountId" header="Google Account ID" sortable />
-        {/* <Column
+          <Column
           header="Actions"
           body={(rowData) => (
             <div className="action-buttons">
               <button
-                className="icon-button edit-btn p-button"
-                onClick={() => alert(`Editing Client: ${rowData.clientName}`)}
+                className="btn primary sm"
+                o onClick={() => handleEditClient(rowData.clientName)}
               >
-                <i className="pi pi-pencil"></i>
+                Edit
               </button>
-              <button
-                className="icon-button delete-btn p-button"
-                onClick={() => alert(`Deleting Client: ${rowData.clientName}`)}
-              >
-                <i className="pi pi-trash"></i>
-              </button>
+            
             </div>
           )}
           bodyClassName="text-center"
-        /> */}
+        /> 
       </DataTable>
     </div>
   );

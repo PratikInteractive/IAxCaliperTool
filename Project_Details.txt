@@ -48,6 +48,11 @@ http://15.207.141.243:8080/web/pages/caliper/digitalEntrant/caliperSelfServeApi.
 
 --------------------------------
 
+http://15.207.141.243:8080/web/pages/caliper/digitalEntrant/caliperSelfServeApi.jsp?action=editClientDataSetup
+-- edit client Data here
+--------------------------------
+
+
 COE FORM
 
 client name - disply
