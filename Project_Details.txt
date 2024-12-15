@@ -4,7 +4,7 @@ http://localhost:3000/admin/dashboard -- data displaying properly ( edit functio
 http://localhost:3000/admin/client-creation -- form working with validations
 http://localhost:3000/admin/client-user-creation  -- form working with validations
 
-Client location exclusion - not mandatory field (done)
+Client location exclusion - not mandatory field (done1)
 Call ads phone number - increment not needed (done)
 Landing page URL = "https://www" prefix mandatory
 Youtube page URL = hide (done)
