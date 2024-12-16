@@ -173,10 +173,10 @@ const Page = () => {
 
         if (response.data.result === "success") {
           console.log("Fetched Keywords details:", response.data);
-        const fetchedKeywords = response.data.caliperBaseKeywords?.map(
+        const fetchedKeywords = response.data.caliperBaseKeywords?.null?.map(
           (item) => ({
             value: item.keyword,
-            label: `${item.keyword} (Search Volume: ${item.searchVolume})`,
+            label: `${item.keyword}`,
             searchVolume: item.searchVolume, 
           })
         );
