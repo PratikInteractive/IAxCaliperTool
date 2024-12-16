@@ -68,25 +68,50 @@ export default function Page() {
         <Column field="endDate" header="End Date" />
         <Column field="dailyBudget" header="Total Budget" sortable />
         <Column field="status" header="Status" />
-        <Column field="comment" header="Comments" />
         <Column
-          header="Actions"
+          header="Approval"
           body={(rowData) => (
             <div className="action-buttons">
               <button
-                className="icon-button edit-btn p-button"
+                className="btn primary sm"
                 onClick={() =>
                   alert(`Editing campaign: ${rowData.campaignName}`)
                 }
               >
-                <i className="pi pi-pencil"></i>
+              Approve
               </button>
-              {/* <button
-          className="icon-button delete-btn p-button"
-          onClick={() => alert(`Deleting campaign: ${rowData.campaignName}`)}
-        >
-          <i className="pi pi-trash"></i>
-        </button> */}
+            </div>
+          )}
+          bodyClassName="text-center"
+        />
+        <Column
+          header="Reject"
+          body={(rowData) => (
+            <div className="action-buttons">
+              <button
+                className="btn primary sm"
+                onClick={() =>
+                  alert(`Editing campaign: ${rowData.campaignName}`)
+                }
+              >
+              Reject
+              </button>
+            </div>
+          )}
+          bodyClassName="text-center"
+        />
+        <Column
+          header="Pause"
+          body={(rowData) => (
+            <div className="action-buttons">
+              <button
+                className="btn primary sm"
+                onClick={() =>
+                  alert(`Editing campaign: ${rowData.campaignName}`)
+                }
+              >
+              Pause
+              </button>
             </div>
           )}
           bodyClassName="text-center"

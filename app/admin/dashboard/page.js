@@ -88,7 +88,7 @@ export default function Page() {
             <div className="action-buttons">
               <button
                 className="btn primary sm"
-                o onClick={() => handleEditClient(rowData.clientName)}
+                onClick={() => handleEditClient(rowData.clientName)}
               >
                 Edit
               </button>
