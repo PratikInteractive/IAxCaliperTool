@@ -42,8 +42,10 @@ export default function Page() {
     fetchCampaigns();
   }, []);
 
-  const handleCreate = (rowData) => {
+  const handleEdit = (rowData) => {
     // Store rowData in session storage or pass as query params
+
+    console.log("rowData", rowData)
     sessionStorage.setItem("selectedCampaign", JSON.stringify(rowData));
     window.location.href = "/coe/campaign-status";
   };
@@ -81,9 +83,9 @@ export default function Page() {
             <div className="action-buttons">
               <button
                 className="btn secondary"
-                onClick={() => handleCreate(rowData)}
+                onClick={() => handleEdit(rowData)}
               >
-                Create
+                Edit
               </button>
             </div>
           )}
