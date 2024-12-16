@@ -1,6 +1,6 @@
 'use client';
 import React, { useState, useEffect } from 'react';
-import logo from '@/app/assets/logo.svg';
+import logo from '@/app/assets/header-logo.png';
 import Image from 'next/image';
 import styles from './header.module.css';
 import { usePathname } from 'next/navigation';
