@@ -16,13 +16,11 @@ export default function Page() {
   const rows = 10;
   const [first, setFirst] = useState(0);
 
-  useEffect(() => {
-    const storedUserId = sessionStorage.getItem("user_id");
 
-  }, [])
   useEffect(() => {
     const fetchCampaigns = async () => {
       try {
+        const storedUserId = sessionStorage.getItem("user_id");
         const payload = {
           loggedInUser: storedUserId,
         };
@@ -54,9 +52,9 @@ export default function Page() {
     <div className={`container ${styles.dashboard}`}>
       <div className={styles.dashboard_block}>
         <h2>Campaign List</h2>
-        <Link href="/client/campaign-creation">
+        {/* <Link href="/client/campaign-creation">
           <Button className="btn primary">Create Campaign</Button>
-        </Link>
+        </Link> */}
       </div>
       <DataTable
         value={campaigns}
@@ -70,6 +68,7 @@ export default function Page() {
         emptyMessage="No campaigns found."
         loading={loading}
       >
+         <Column field="campaignId" header="Campaign Id" sortable />
         <Column field="campaignName" header="Campaign Name" sortable />
         <Column field="startDate" header="Start Date" />
         <Column field="endDate" header="End Date" />

@@ -4,7 +4,7 @@ import { useState } from "react";
 import styles from "./login.module.css";
 import { useRouter } from "next/navigation";
 import CryptoJS from "crypto-js";
-import logo from '@/app/assets/logo.svg';
+import logo from '@/app/assets/login-logo.png';
 import Image from 'next/image';
 
 const page = () => {
