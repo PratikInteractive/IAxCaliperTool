@@ -19,13 +19,17 @@ const Page = () => {
   const [phoneError, setPhoneError] = useState("");
   const [pincode, setPincode] = useState("");
   const [pincodeError, setPincodeError] = useState("");
-  const [cityOptions, setCityOptions] = useState([]);
-  const [stateOptions, setStateOptions] = useState([]);
-  const [selectedCity, setSelectedCity] = useState(null);
-  const [selectedState, setSelectedState] = useState(null);
   const [adPhoneNumber, setAdPhoneNumber] = useState("");
   const [adPhoneError, setAdPhoneError] = useState("");
   const [industryData, setIndustryData] = useState({});
+
+  const [selectedState, setSelectedState] = useState(null);
+
+  const [stateOptions, setStateOptions] = useState([]);
+  const [stateData, setStateData] = useState({});
+
+  const [subCityOptions, setSubCityOptions] = useState([]);
+  const [selectedSubCity, setSselectedSubCity] = useState(null);
 
   
   const platformOptions = [
@@ -217,45 +221,54 @@ const Page = () => {
 
   // Fetch city and state data
   useEffect(() => {
-    const fetchCityState = async () => {
+    const fetchCityStateData = async () => {
       try {
         const response = await axios.get(
           `${apiUrl}caliper/digitalEntrant/caliperSelfServeApi.jsp?action=viewGoogleLocations`
         );
-
-        const data = response.data;
-        console.log("Fetched Data:", data);
-
-        // Process city options
-        const cityList = data.ViewGoogleLocationsResponseList.filter(
-          (location) => location.targetType === "City"
-        ).map((location) => ({
-          label: location.name,
-          value: location.locationId,
-          targetType: "City",
+  
+        const data = response.data.completeMap.India;
+  
+        // Store state and city mapping
+        setStateData(data);
+  
+        // Format state options for dropdown
+        const states = Object.keys(data).map((state) => ({
+          label: state,
+          value: state,
         }));
-
-        // Process state options (fixed case sensitivity)
-        const stateList = data.ViewGoogleLocationsResponseList.filter(
-          (location) => location.targetType === "State"
-        ).map((location) => ({
-          label: location.name,
-          value: location.locationId,
-          targetType: "State",
-        }));
-
-        setCityOptions(cityList);
-        setStateOptions(stateList);
-
-        console.log("Processed City Options:", cityList);
-        console.log("Processed State Options:", stateList);
+  
+        setStateOptions(states);
       } catch (error) {
-        console.error("Error fetching location data:", error.message);
+        console.error("Error fetching city/state data:", error.message);
       }
     };
-
-    fetchCityState();
+  
+    fetchCityStateData();
   }, []);
+  
+
+
+  
+  const handleStateChange = (selectedOption) => {
+    setSelectedState(selectedOption);
+  
+    if (selectedOption) {
+      const cities = stateData[selectedOption.value] || [];
+  
+      // Format cities for dropdown
+      const cityOptionsFormatted = cities.map((city) => ({
+        label: city,
+        value: city,
+      }));
+  
+      setSubCityOptions(cityOptionsFormatted);
+      setSselectedSubCity(null); // Reset city selection
+    }
+  };
+  
+  
+
 
   return (
     <div className="container mt-2">
@@ -321,8 +334,8 @@ const Page = () => {
             <Select
               options={stateOptions}
               value={selectedState}
-              onChange={(selectedOption) => setSelectedState(selectedOption)}
-              placeholder="Please Select"
+              onChange={handleStateChange}
+              placeholder="Select State"
               styles={{
                 placeholder: (base) => ({
                   ...base,
@@ -335,10 +348,10 @@ const Page = () => {
           <div className="form_element select_form_element">
             <label>Select City</label>
             <Select
-              options={cityOptions}
-              value={selectedCity}
-              onChange={(selectedOption) => setSelectedCity(selectedOption)}
-              placeholder="Select City"
+              options={subCityOptions}
+              value={selectedSubCity}
+              onChange={setSselectedSubCity}
+              placeholder="Please Select a City"
               styles={{
                 placeholder: (base) => ({
                   ...base,
