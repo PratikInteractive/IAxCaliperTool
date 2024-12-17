@@ -1,7 +1,8 @@
 "use client";
 
-import React, { useEffect , useState } from "react";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
+import Select from "react-select";
 
 const Page = () => {
   const [formData, setFormData] = useState({
@@ -20,27 +21,84 @@ const Page = () => {
     keywords: "",
     adName: "",
     finalUrl: "",
-    headlines: "",
-    descriptions: "",
+    headlines: [],
+    descriptions: [],
     clientComment: "",
     totalBudget: "",
     dailyBudget: "",
+    manualCpcTrueFalse: false,
+    maximizeClicksNumber: "",
+    targetImpressionShareNumber: "",
+    isTargetGoogleSearch: "false",
+    isTargetSearchNetwork: "false",
+    isTargetContentNetwork: "false",
+    isTargetPartnerSearchNetwork: "false",
   });
+
+  const [locationOptions, setLocationOptions] = useState([]);
+
+
+  const biddingStrategyOptions = [
+    { value: "Manual CPC", label: "Manual CPC" },
+    { value: "Maximize Clicks", label: "Maximize Clicks" },
+    { value: "Maximize Conversions", label: "Maximize Conversions" },
+    { value: "Maximize Conversion Value", label: "Maximize Conversion Value" },
+    { value: "Target Impression Share", label: "Target Impression Share" },
+  ];
+
+  const manualCpcOptions = [
+    { value: "false", label: "False" },
+    { value: "true", label: "True" },
+  ];
+
+  const networkOptions = [
+    { value: "isTargetGoogleSearch", label: "Target Google Search" },
+    { value: "isTargetSearchNetwork", label: "Target Search Network" },
+    { value: "isTargetContentNetwork", label: "Target Content Network" },
+    {
+      value: "isTargetPartnerSearchNetwork",
+      label: "Target Partner Search Network",
+    },
+  ];
+
+  const handleNetworkChange = (selectedOptions) => {
+    const updatedNetworkState = {
+      isTargetGoogleSearch: "false",
+      isTargetSearchNetwork: "false",
+      isTargetContentNetwork: "false",
+      isTargetPartnerSearchNetwork: "false",
+    };
+
+    if (selectedOptions) {
+      selectedOptions.forEach((option) => {
+        updatedNetworkState[option.value] = "true";
+      });
+    }
+
+    setFormData({
+      ...formData,
+      ...updatedNetworkState,
+    });
+  };
+
+  const selectedNetworkOptions = networkOptions.filter(
+    (option) => formData[option.value] === "true"
+  );
 
   useEffect(() => {
     const savedCampaign = sessionStorage.getItem("selectedCampaign");
     const userId = sessionStorage.getItem("user_id");
-  
+
     if (savedCampaign && userId) {
       const parsedCampaign = JSON.parse(savedCampaign);
-  
+
       const requestBody = {
         loggedInUser: userId,
         campaignName: parsedCampaign.campaignName,
         campaignId: parsedCampaign.campaignId,
         clientName: parsedCampaign.clientName,
       };
-  
+
       axios
         .post(
           "http://15.207.141.243:8080/web/pages/caliper/digitalEntrant/caliperSelfServeApi.jsp?action=viewCampaignSetupDetails",
@@ -56,22 +114,47 @@ const Page = () => {
             endDate: campaignData.endDate || "",
             platform: campaignData.platform || "Default Platform",
             phoneNumber: campaignData.phoneNumber || "",
-            landingUrl: campaignData.caliperClientDataSetup?.landingPageUrl || "",
-            biddingStrategy: campaignData.biddingStrategy || "Manual CPC",
+            landingUrl:
+              campaignData.caliperClientDataSetup?.landingPageUrl || "",
+            biddingStrategy: campaignData.biddingStrategy || "",
             network: campaignData.network || "Search Network",
             industry: campaignData.caliperClientDataSetup?.industry || "",
             subIndustry: campaignData.caliperClientDataSetup?.subIndustry || "",
             adsLocation: campaignData.adsLocation || "",
-            keywords: campaignData.keywords.map(k => k.keyword).join(", ") || "",
+            keywords:
+              campaignData.keywords.map((k) => k.keyword).join(", ") || "",
             adName: campaignData.adName || "",
-            finalUrl: campaignData.caliperGoogleResponsiveAdList.find(ad => ad.type === "FINAL_URL")?.value || "",
-            headlines: campaignData.caliperGoogleResponsiveAdList.filter(ad => ad.type === "HEADLINE").map(ad => ad.value).join(", "),
-            descriptions: campaignData.caliperGoogleResponsiveAdList.filter(ad => ad.type === "DESCRIPTION").map(ad => ad.value).join(", "),
+            finalUrl: campaignData.finalUrl || "",
+            headlines: campaignData.headlines || [],
+            descriptions: campaignData.descriptions || [],
             clientComment: campaignData.clientComment || "",
             totalBudget: campaignData.totalBudget || "",
-            dailyBudget: (campaignData.totalBudget / 5).toFixed(2) || "", // Example calculation
-            adPhoneNumber: campaignData.caliperClientDataSetup?.adPhoneNumber || "",
+            dailyBudget: campaignData.totalBudget || "",
+            adPhoneNumber:
+              campaignData.caliperClientDataSetup?.adPhoneNumber || "",
           });
+
+
+          const locationData = campaignData.caliperClientDataSetup;
+          setLocationOptions([
+            { value: locationData.city, label: `City - ${locationData.city}` },
+            {
+              value: locationData.state,
+              label: `State - ${locationData.state}`,
+            },
+            {
+              value: `${locationData.latitude}/${locationData.longitude}`,
+              label: `Latitude/Longitude - ${locationData.latitude}/${locationData.longitude}`,
+            },
+            {
+              value: `${locationData.radius} ${locationData.radiusUnit}`,
+              label: `Radius - ${locationData.radius} ${locationData.radiusUnit}`,
+            },
+            {
+              value: locationData.pincode,
+              label: `Pincode - ${locationData.pincode}`,
+            },
+          ]);
         })
         .catch((error) => {
           console.error("API Error:", error);
@@ -88,11 +171,63 @@ const Page = () => {
     });
   };
 
+  const handleLocationChange = (selectedOption) => {
+    setFormData({ ...formData, adsLocation: selectedOption.value });
+  };
+
+  const handleSelectChange = (selectedOption) => {
+    setFormData({
+      ...formData,
+      biddingStrategy: selectedOption.value,
+    });
+  };
+
+  const handleManualCpcChange = (selectedOption) => {
+    setFormData({
+      ...formData,
+      manualCpcTrueFalse: selectedOption.value === "true",
+    });
+  };
+
+  const handleNumberChange = (e, field) => {
+    setFormData({
+      ...formData,
+      [field]: e.target.value,
+    });
+  };
+
+  const preparePayload = () => {
+    let finalBiddingStrategy = formData.biddingStrategy;
+
+    if (formData.biddingStrategy === "Manual CPC") {
+      finalBiddingStrategy = `Manual CPC (${
+        formData.manualCpcTrueFalse ? "True" : "False"
+      })`;
+    }
+    if (formData.biddingStrategy === "Maximize Clicks") {
+      finalBiddingStrategy = `Maximize Clicks (${formData.maximizeClicksNumber})`;
+    }
+    if (formData.biddingStrategy === "Target Impression Share") {
+      finalBiddingStrategy = `Target Impression Share (${formData.targetImpressionShareNumber})`;
+    }
+
+    return {
+      ...formData,
+      biddingStrategy: finalBiddingStrategy,
+    };
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    const payload = preparePayload();
+    console.log("Form Data Submitted:", payload);
+  };
+
   return (
     <div className="container mt-2">
       <h3 className="mb-2">Campaign Setup</h3>
       <div className="form_block">
-        <form className="form_elements">
+        <form className="form_elements" onSubmit={handleSubmit}>
           <div className="form_element">
             <label>Client Name</label>
             <input
@@ -167,22 +302,74 @@ const Page = () => {
 
           <div className="form_element">
             <label>Bidding Strategy</label>
-            <input
-              type="text"
-              name="biddingStrategy"
-              value={formData.biddingStrategy}
-              onChange={handleChange}
-              placeholder="Enter Bidding Strategy"
+            <Select
+              options={biddingStrategyOptions}
+              value={biddingStrategyOptions.find(
+                (option) => option.value === formData.biddingStrategy
+              )}
+              onChange={handleSelectChange}
+              placeholder="Select Bidding Strategy"
+              isSearchable={false}
             />
           </div>
+
+          {formData.biddingStrategy === "Manual CPC" && (
+            <div className="form_element">
+              <label>True/False (Manual CPC)</label>
+              <Select
+                options={manualCpcOptions}
+                value={manualCpcOptions.find(
+                  (option) =>
+                    option.value ===
+                    (formData.manualCpcTrueFalse ? "true" : "false")
+                )}
+                onChange={handleManualCpcChange}
+                placeholder="Select True or False"
+              />
+            </div>
+          )}
+
+          {(formData.biddingStrategy === "Maximize Clicks" ||
+            formData.biddingStrategy === "Target Impression Share") && (
+            <div className="form_element">
+              <label>Number (Maximize Clicks / Target Impression Share)</label>
+              <input
+                type="number"
+                value={
+                  formData.biddingStrategy === "Maximize Clicks"
+                    ? formData.maximizeClicksNumber
+                    : formData.targetImpressionShareNumber
+                }
+                onChange={(e) =>
+                  handleNumberChange(
+                    e,
+                    formData.biddingStrategy === "Maximize Clicks"
+                      ? "maximizeClicksNumber"
+                      : "targetImpressionShareNumber"
+                  )
+                }
+                placeholder="Enter Number"
+              />
+            </div>
+          )}
+
+          {["Maximize Conversions", "Maximize Conversion Value"].includes(
+            formData.biddingStrategy
+          ) && (
+            <div className="form_element">
+              <p>{formData.biddingStrategy} selected. No additional fields.</p>
+            </div>
+          )}
+
           <div className="form_element">
             <label>Network</label>
-            <input
-              type="text"
-              name="network"
-              value={formData.network}
-              onChange={handleChange}
-              placeholder="Enter Network"
+            <Select
+              options={networkOptions}
+              isMulti
+              value={selectedNetworkOptions}
+              onChange={handleNetworkChange}
+              placeholder="Select Network"
+              closeMenuOnSelect={false}
             />
           </div>
 
@@ -209,12 +396,14 @@ const Page = () => {
 
           <div className="form_element">
             <label>Ads Location</label>
-            <input
-              type="text"
-              name="adsLocation"
-              value={formData.adsLocation}
-              onChange={handleChange}
-              placeholder="Enter Ads Location"
+            <Select
+              options={locationOptions}
+              value={locationOptions.find(
+                (opt) => opt.value === formData.adsLocation
+              )}
+              onChange={handleLocationChange}
+              placeholder="Select Ads Location"
+              isSearchable={false}
             />
           </div>
 
@@ -251,26 +440,25 @@ const Page = () => {
           </div>
 
           <div className="form_element">
-            <label>Headlines</label>
-            <input
-              type="text"
-              name="headlines"
-              value={formData.headlines}
-              onChange={handleChange}
-              placeholder="Enter Headlines"
-            />
-          </div>
+  <label>Headlines</label>
+  <Select
+    options={formData.headlines}
+    isMulti
+    placeholder="Select Headlines"
+  />
+</div>
 
-          <div className="form_element">
-            <label>Descriptions</label>
-            <input
-              type="text"
-              name="descriptions"
-              value={formData.descriptions}
-              onChange={handleChange}
-              placeholder="Enter Descriptions"
-            />
-          </div>
+<div className="form_element">
+  <label>Descriptions</label>
+  <Select
+    options={formData.descriptions}
+    isMulti
+    placeholder="Select Descriptions"
+  />
+</div>
+
+
+
           <div className="form_element">
             <label>Client Comment</label>
             <input
