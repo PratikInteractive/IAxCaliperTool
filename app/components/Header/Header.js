@@ -23,7 +23,7 @@ const Header = () => {
     }
   }, []);
 
-  if (currentPath === "/login") {
+  if (currentPath === "/login" || currentPath === "/unauthorized") {
     return null;
   }
 

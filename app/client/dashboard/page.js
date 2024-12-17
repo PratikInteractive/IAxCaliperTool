@@ -8,8 +8,17 @@ import axios from "axios";
 import Link from "next/link";
 import styles from "@/app/styles/dashboad.module.css";
 import Swal from "sweetalert2";
+// import { useRoleCheck } from "@/app/utils/userRoleCheck";
 
 export default function Page() {
+
+  // // Role Check Start
+  // const { isAuthorized } = useRoleCheck("client");
+  // if (!isAuthorized) {
+  //   window.location.href = "/unauthorized"
+  //   return null; // Or redirect if needed
+  // }
+  // // Role Check End
   const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 
   const [campaigns, setCampaigns] = useState([]);
