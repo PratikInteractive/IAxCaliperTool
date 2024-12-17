@@ -81,7 +81,7 @@ export default function Page() {
         <Column field="clientName" header="Client Name" sortable />
         <Column field="clientEmail" header="Client Email" sortable />
         <Column field="clientType" header="Client Type" sortable />
-        <Column field="googleAccountId" header="Google Account ID" sortable />
+        <Column field="userId" header="User ID" sortable />
           <Column
           header="Actions"
           body={(rowData) => (
