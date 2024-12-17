@@ -19,8 +19,11 @@ const Page = () => {
   });
   const [userId, setUserId] = useState(null);
   const [currentDate, setCurrentDate] = useState("");
+  const [dailyBudget, setDailyBudget] = useState(0);
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
+  const [campaignBudget, setCampaignBudget] = useState(0);
 
-  
   const platformOptions = [
     { value: "Search", label: "Search" },
     // { value: "P-Max", label: "P-Max" },
@@ -47,7 +50,7 @@ const Page = () => {
     setDescriptions(updatedDescriptions);
   };
 
- 
+
   useEffect(() => {
     // Get the current date in the format YYYY-MM-DD
     const today = new Date();
@@ -59,7 +62,7 @@ const Page = () => {
   useEffect(() => {
     const fetchUrlDetails = async () => {
       try {
-        const storedUserId = sessionStorage.getItem("user_id"); 
+        const storedUserId = sessionStorage.getItem("user_id");
         const response = await axios.post(
           `${apiUrl}caliper/digitalEntrant/caliperSelfServeApi.jsp?action=viewUrlDetails`,
           {
@@ -91,6 +94,47 @@ const Page = () => {
     fetchUrlDetails();
   }, []);
 
+  // Calculation of Daily Budget
+  const calcDailyBudget = (e) => {
+    e.preventDefault();
+    const startDate = formRef.current.elements["startDate"].value;
+    const endDate = formRef.current.elements["endDate"].value;
+    const campaignBudget = formRef.current.elements["CampaignBudget"].value;
+
+    if (startDate && endDate && campaignBudget > 0) {
+      const start = new Date(startDate);
+      const end = new Date(endDate);
+      const days = (end - start) / (1000 * 60 * 60 * 24) + 1;
+
+      if (days > 0) {
+        const calculatedBudget = campaignBudget / days;
+        setDailyBudget(Math.max(calculatedBudget, 0).toFixed(2));
+      } else {
+        setDailyBudget(0);
+      }
+    } else {
+      setDailyBudget(0);
+    }
+  };
+
+  useEffect(() => {
+    if (startDate && endDate && campaignBudget > 0) {
+      const start = new Date(startDate);
+      const end = new Date(endDate);
+      const days = (end - start) / (1000 * 60 * 60 * 24) + 1; // Include end date
+      if (days > 0) {
+        const calculatedBudget = campaignBudget / days;
+        setDailyBudget(Math.max(calculatedBudget, 0).toFixed(2)); // Ensure non-negative daily budget
+      } else {
+        setDailyBudget(0);
+      }
+    } else {
+      setDailyBudget(0);
+    }
+  }, [startDate, endDate, campaignBudget]); // Recalculate when these change
+
+
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
@@ -99,7 +143,18 @@ const Page = () => {
   const handleSubmit = async (event) => {
     event.preventDefault();
 
-    
+
+    // Validation for dailyBudget
+    if (!dailyBudget || dailyBudget <= 0) {
+      Swal.fire({
+        title: "Validation Error",
+        text: "Please calculate the daily budget before proceeding.",
+        icon: "warning",
+        confirmButtonText: "OK",
+      });
+      return;
+    }
+
     const storedUserId = sessionStorage.getItem("user_id");
     const formData = new FormData(formRef.current);
 
@@ -112,6 +167,7 @@ const Page = () => {
       startDate: formData.get("startDate"),
       endDate: formData.get("endDate"),
       campaignBudget: formData.get("CampaignBudget"),
+      dailyBudget,
       landingPageUrl: formData.get("landingUrl"),
       youtubeUrl: "",
       headlines,
@@ -130,7 +186,7 @@ const Page = () => {
       });
       return;
     }
-  
+
     if (descriptions.length < 2 || descriptions.length > 4) {
       Swal.fire({
         title: "Validation Error",
@@ -224,11 +280,11 @@ const Page = () => {
           </div>
           <div className="form_element">
             <label>Start Date</label>
-            <input type="date" name="startDate" min={currentDate} required />
+            <input type="date" name="startDate" min={currentDate} onChange={(e) => setStartDate(e.target.value)} required />
           </div>
           <div className="form_element">
             <label>End Date</label>
-            <input type="date" name="endDate"  min={currentDate} required />
+            <input type="date" name="endDate" min={currentDate} onChange={(e) => setStartDate(e.target.value)} required />
           </div>
           <div className="form_element">
             <label>Campaign Budget</label>
@@ -238,6 +294,20 @@ const Page = () => {
               placeholder="Specify Budget"
               required
               min={0}
+              onChange={(e) => setCampaignBudget(Number(e.target.value))}
+            />
+          </div>
+          <div className="form_element">
+            <label>&nbsp;</label>
+            <button className="btn" onClick={calcDailyBudget}>Calculate Daily Budget</button>
+          </div>
+          <div className="form_element">
+            <label>Daily Budget</label>
+            <input
+              type="text"
+              value={dailyBudget || ""}
+              readOnly
+              placeholder="Calculated daily budget"
             />
           </div>
           <div className="form_element">
@@ -301,7 +371,7 @@ const Page = () => {
                         handleHeadlineChange(index, e.target.value)
                       }
                       placeholder="Enter headline (max 30 chars)"
-                      maxLength={30} 
+                      maxLength={30}
                       required
                     />
                   </div>

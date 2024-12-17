@@ -84,7 +84,7 @@ const Page = () => {
     jsonObject.industry = selectedIndustry?.value || null;
     jsonObject.subIndustry = selectedSubIndustry?.value || null;
     jsonObject.state = selectedState?.value || null;
-    jsonObject.city = selectedCity?.value || null;
+    jsonObject.city = selectedSubCity?.value || null;
     jsonObject.loggedInUser = userId;
     jsonObject.adPhoneNumber = adPhoneNumber;
     jsonObject.radiusUnit = jsonObject.radiusUnit =

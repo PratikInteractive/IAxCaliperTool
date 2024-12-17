@@ -7,6 +7,7 @@ import { Button } from "primereact/button";
 import axios from "axios";
 import Link from "next/link";
 import styles from "@/app/styles/dashboad.module.css";
+import Swal from "sweetalert2";
 
 export default function Page() {
   const apiUrl = process.env.NEXT_PUBLIC_API_URL;
@@ -43,6 +44,108 @@ export default function Page() {
     fetchCampaigns();
   }, []);
 
+
+  const Approval = async (rowData) => {
+    console.log("Approval Clicked");
+    console.log("Row Data", rowData.campaignId);
+
+    // const storedUserId = sessionStorage.getItem("user_id");
+    try {
+      const payload = {
+        "loggedInUser": rowData.loggedInUser,
+        "campaignId": rowData.campaignId
+      };
+
+      const response = await axios.post(
+        `${apiUrl}caliper/digitalEntrant/caliperSelfServeApi.jsp?action=approveCaliperCampaign`,
+        payload
+      );
+      console.log("response", response);
+      if (response.data.result == "success") {
+        Swal.fire({
+          title: "Success!",
+          text: "Campaign Approved Successfully!",
+          icon: "success",
+          confirmButtonText: "OK",
+        }).then((result) => {
+          if (result.isConfirmed) {
+            window.location.href = "/client/dashboard";
+          }
+        });
+      }
+    } catch (error) {
+      console.error("Error fetching campaigns:", error);
+    }
+  }
+
+  const Reject = async (rowData) => {
+    console.log("Reject Clicked");
+    console.log("Row Data", rowData.campaignId);
+
+    try {
+      const payload = {
+        "loggedInUser": rowData.loggedInUser,
+        "campaignId": rowData.campaignId
+      };
+
+      const response = await axios.post(
+        `${apiUrl}caliper/digitalEntrant/caliperSelfServeApi.jsp?action=rejectCaliperCampaign`,
+        payload
+      );
+
+      console.log("response", response);
+      if (response.data.result == "success") {
+        Swal.fire({
+          title: "Success!",
+          text: "Campaign Reject Successfully!!",
+          icon: "success",
+          confirmButtonText: "OK",
+        }).then((result) => {
+          if (result.isConfirmed) {
+            window.location.href = "/client/dashboard";
+          }
+        });
+      }
+    } catch (error) {
+      console.error("Error fetching campaigns:", error);
+    }
+  }
+
+  const Pause = async (rowData) => {
+    console.log("Pause Clicked");
+    console.log("Row Data", rowData.campaignId);
+
+    try {
+      const payload = {
+        "loggedInUser": rowData.loggedInUser,
+        "campaignId": rowData.campaignId
+      };
+
+      const response = await axios.post(
+        `${apiUrl}caliper/digitalEntrant/caliperSelfServeApi.jsp?action=pauseCaliperCampaign`,
+        payload
+      );
+
+      console.log("response", response);
+      if (response.data.result == "success") {
+        Swal.fire({
+          title: "Success!",
+          text: "Campaign Paused Successfully!!",
+          icon: "success",
+          confirmButtonText: "OK",
+        }).then((result) => {
+          if (result.isConfirmed) {
+            window.location.href = "/client/dashboard";
+          }
+        });
+      }
+
+    } catch (error) {
+      console.error("Error fetching campaigns:", error);
+    }
+  }
+
+
   return (
     <div className={`container ${styles.dashboard}`}>
       <div className={styles.dashboard_block}>
@@ -74,11 +177,9 @@ export default function Page() {
             <div className="action-buttons">
               <button
                 className="btn primary sm"
-                onClick={() =>
-                  alert(`Editing campaign: ${rowData.campaignName}`)
-                }
+                onClick={() => Approval(rowData)}
               >
-              Approve
+                Approve
               </button>
             </div>
           )}
@@ -90,11 +191,9 @@ export default function Page() {
             <div className="action-buttons">
               <button
                 className="btn primary sm"
-                onClick={() =>
-                  alert(`Editing campaign: ${rowData.campaignName}`)
-                }
+                onClick={() => Reject(rowData)}
               >
-              Reject
+                Reject
               </button>
             </div>
           )}
@@ -106,11 +205,9 @@ export default function Page() {
             <div className="action-buttons">
               <button
                 className="btn primary sm"
-                onClick={() =>
-                  alert(`Editing campaign: ${rowData.campaignName}`)
-                }
+                onClick={() => Pause(rowData)}
               >
-              Pause
+                Pause
               </button>
             </div>
           )}

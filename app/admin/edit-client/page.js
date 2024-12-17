@@ -75,6 +75,35 @@ export default function EditClientPage() {
     setFormValues({ ...formValues, [name]: value });
   };
 
+  // Fetching State and City
+    // Fetch city and state data
+    useEffect(() => {
+      const fetchCityStateData = async () => {
+        try {
+          const response = await axios.get(
+            `${apiUrl}caliper/digitalEntrant/caliperSelfServeApi.jsp?action=viewGoogleLocations`
+          );
+    
+          const data = response.data.completeMap.India;
+          console.log("State City Data",data);
+          // Store state and city mapping
+          setStateData(data);
+    
+          // Format state options for dropdown
+          const states = Object.keys(data).map((state) => ({
+            label: state,
+            value: state,
+          }));
+    
+          setStateOptions(states);
+        } catch (error) {
+          console.error("Error fetching city/state data:", error.message);
+        }
+      };
+    
+      fetchCityStateData();
+    }, []);
+
   // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
