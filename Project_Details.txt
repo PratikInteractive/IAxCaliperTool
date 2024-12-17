@@ -65,7 +65,7 @@ bidding strategy - hardcode
 network settings - hardcode
 industry - disply
 sub-industry -  disply
-ads location - disply + edit
+ads location - disply + select
 drop down 
 	city
 	state
