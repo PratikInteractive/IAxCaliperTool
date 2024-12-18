@@ -8,14 +8,14 @@ import logo from '@/app/assets/login-logo.png';
 import Image from 'next/image';
 
 const page = () => {
-  const [isLoading, setIsLoading] = useState(false); 
+  const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const apiUrl = process.env.NEXT_PUBLIC_API_URL;
   const router = useRouter();
 
   const handleLogin = async (e) => {
     e.preventDefault();
-    setIsLoading(true); 
+    setIsLoading(true);
     setErrorMessage("");
     const user_id = e.target.email.value;
     const plainPassword = e.target.password.value;
@@ -38,10 +38,13 @@ const page = () => {
           sessionStorage.setItem("user_id", user_id);
           const user_role = result.value;
           if (user_role.includes("caliper_admin")) {
+            sessionStorage.setItem("role", "admin");
             router.push("/admin/dashboard/");
           } else if (user_role === "caliper_client") {
+            sessionStorage.setItem("role", "client");
             router.push("/client/dashboard/");
           } else if (user_role === "caliper_hub_user") {
+            sessionStorage.setItem("role", "coe");
             router.push("/coe/dashboard/");
           } else {
             setIsLoading(false);

@@ -54,7 +54,10 @@ export default function Page() {
   // Edit Functionality
   const handleEditClient = (clientName) => {
     // console.log("Editing Client:", clientName); 
-    router.push(`/admin/edit-client?clientName=${encodeURIComponent(clientName)}`); 
+    // router.push(`/admin/edit-client?clientName=${encodeURIComponent(clientName)}`); 
+
+    sessionStorage.setItem('clientName',clientName);
+    window.location.href = "/admin/edit-client";
   };
 
   return (
@@ -81,7 +84,7 @@ export default function Page() {
         <Column field="clientName" header="Client Name" sortable />
         <Column field="clientEmail" header="Client Email" sortable />
         <Column field="clientType" header="Client Type" sortable />
-        <Column field="googleAccountId" header="Google Account ID" sortable />
+        <Column field="userId" header="User ID" sortable />
           <Column
           header="Actions"
           body={(rowData) => (

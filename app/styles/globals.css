@@ -76,6 +76,27 @@ input:focus {
     background-color: var(--secondaryColor);
     border: 1px solid var(--secondaryColor);
 }
+.btn.success {
+    background: #34c759;
+    padding: 10px 14px;
+    font-size: 12px;
+    border-color: #34c759;
+    color: #000;
+}
+.btn.reject {
+    background: #f56969;
+    padding: 10px 14px;
+    font-size: 12px;
+    border-color: #f56969;
+    color: #000;
+}
+.btn.pause {
+    background: #ffcc00;
+    padding: 10px 14px;
+    font-size: 12px;
+    border-color: #ffcc00;
+    color: #000;
+}
 
 /* Table */
 table {
