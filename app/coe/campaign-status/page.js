@@ -14,11 +14,9 @@ const Page = () => {
     phoneNumber: "",
     landingUrl: "",
     biddingStrategy: "",
-    network: "",
     industry: "",
     subIndustry: "",
-    adsLocation: "",
-    keywords: "",
+    keywords: [],
     adName: "",
     finalUrl: "",
     headlines: [],
@@ -26,17 +24,23 @@ const Page = () => {
     clientComment: "",
     totalBudget: "",
     dailyBudget: "",
-    manualCpcTrueFalse: false,
-    maximizeClicksNumber: "",
-    targetImpressionShareNumber: "",
+    biddingValue: "",
     isTargetGoogleSearch: "false",
     isTargetSearchNetwork: "false",
     isTargetContentNetwork: "false",
     isTargetPartnerSearchNetwork: "false",
+    adPhoneNumber: "",
+    matchType: "",
+    objective: "sales",
   });
 
   const [locationOptions, setLocationOptions] = useState([]);
 
+  const platformOptions = [
+    { value: "Search", label: "Search" },
+    // { value: "P-Max", label: "P-Max" },
+  ];
+  const [selectedPlatform, setSelectedPlatform] = useState(platformOptions[0]);
 
   const biddingStrategyOptions = [
     { value: "Manual CPC", label: "Manual CPC" },
@@ -59,6 +63,12 @@ const Page = () => {
       value: "isTargetPartnerSearchNetwork",
       label: "Target Partner Search Network",
     },
+  ];
+
+  const matchTypeOptions = [
+    { value: "Exact", label: "Exact" },
+    { value: "Phrase", label: "Phrase" },
+    { value: "Broad", label: "Broad" },
   ];
 
   const handleNetworkChange = (selectedOptions) => {
@@ -107,34 +117,50 @@ const Page = () => {
         .then((response) => {
           console.log("API Response:", response.data);
           const campaignData = response.data;
+          const formattedStartDate = formatDate(campaignData.startDate);
+          const formattedEndDate = formatDate(campaignData.endDate);
+
+          console.log("totalBudge", campaignData.totalBudget);
+
           setFormData({
             clientName: campaignData.clientName || "",
             campaignName: campaignData.campaignName || "",
-            startDate: campaignData.startDate || "",
-            endDate: campaignData.endDate || "",
-            platform: campaignData.platform || "Default Platform",
-            phoneNumber: campaignData.phoneNumber || "",
+            startDate: formattedStartDate || "",
+            endDate: formattedEndDate || "",
+            platform: campaignData.platform || "Search",
+            phoneNumber: campaignData.caliperClientDataSetup?.phoneNumber || "",
             landingUrl:
               campaignData.caliperClientDataSetup?.landingPageUrl || "",
             biddingStrategy: campaignData.biddingStrategy || "",
-            network: campaignData.network || "Search Network",
+            network: campaignData.network || "",
             industry: campaignData.caliperClientDataSetup?.industry || "",
             subIndustry: campaignData.caliperClientDataSetup?.subIndustry || "",
-            adsLocation: campaignData.adsLocation || "",
-            keywords:
-              campaignData.keywords.map((k) => k.keyword).join(", ") || "",
+            keywordsOptions: campaignData.keywords.map((k) => ({
+              value: k.keyword,
+              label: k.keyword,
+            })),
             adName: campaignData.adName || "",
             finalUrl: campaignData.finalUrl || "",
-            headlines: campaignData.headlines || [],
-            descriptions: campaignData.descriptions || [],
+            headlinesOptions:
+              campaignData.headlines?.map((headline) => ({
+                value: headline,
+                label: headline,
+              })) || [],
+            descriptionsOptions:
+              campaignData.descriptions?.map((description) => ({
+                value: description,
+                label: description,
+              })) || [],
             clientComment: campaignData.clientComment || "",
             totalBudget: campaignData.totalBudget || "",
             dailyBudget: campaignData.totalBudget || "",
             adPhoneNumber:
               campaignData.caliperClientDataSetup?.adPhoneNumber || "",
+            isTargetGoogleSearch: "false",
+            isTargetSearchNetwork: "false",
+            isTargetContentNetwork: "false",
+            isTargetPartnerSearchNetwork: "false",
           });
-
-
           const locationData = campaignData.caliperClientDataSetup;
           setLocationOptions([
             { value: locationData.city, label: `City - ${locationData.city}` },
@@ -163,6 +189,14 @@ const Page = () => {
     }
   }, []);
 
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    const year = date.getFullYear();
+    const month = (date.getMonth() + 1).toString().padStart(2, "0");
+    const day = date.getDate().toString().padStart(2, "0");
+    return `${year}-${month}-${day}`;
+  };
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({
@@ -172,7 +206,35 @@ const Page = () => {
   };
 
   const handleLocationChange = (selectedOption) => {
-    setFormData({ ...formData, adsLocation: selectedOption.value });
+    const updatedLocation = {
+      latitude: "",
+      longitude: "",
+      radius: "",
+      radiusUnit: "",
+      state: "",
+      city: "",
+      pincode: "",
+    };
+
+    if (selectedOption.value.includes("/")) {
+      const [latitude, longitude] = selectedOption.value.split("/");
+      updatedLocation.latitude = latitude;
+      updatedLocation.longitude = longitude;
+    } else if (selectedOption.value.includes(" ")) {
+      const [radius, radiusUnit] = selectedOption.value.split(" ");
+      updatedLocation.radius = radius;
+      updatedLocation.radiusUnit = radiusUnit;
+    } else if (selectedOption.label.startsWith("City")) {
+      updatedLocation.city = selectedOption.value;
+    } else if (selectedOption.label.startsWith("State")) {
+      updatedLocation.state = selectedOption.value;
+    } else if (selectedOption.label.startsWith("Pincode")) {
+      updatedLocation.pincode = selectedOption.value;
+    }
+    setFormData({
+      ...formData,
+      ...updatedLocation,
+    });
   };
 
   const handleSelectChange = (selectedOption) => {
@@ -185,14 +247,30 @@ const Page = () => {
   const handleManualCpcChange = (selectedOption) => {
     setFormData({
       ...formData,
-      manualCpcTrueFalse: selectedOption.value === "true",
+      biddingValue: selectedOption.value === "true",
     });
   };
 
   const handleNumberChange = (e, field) => {
+    const value = e.target.value;
     setFormData({
       ...formData,
-      [field]: e.target.value,
+      [field]: value,
+      biddingValue: value,
+    });
+  };
+
+  const handleHeadlinesChange = (selectedOptions) => {
+    setFormData({
+      ...formData,
+      headlines: selectedOptions,
+    });
+  };
+
+  const handleDescriptionsChange = (selectedOptions) => {
+    setFormData({
+      ...formData,
+      descriptions: selectedOptions,
     });
   };
 
@@ -200,26 +278,45 @@ const Page = () => {
     let finalBiddingStrategy = formData.biddingStrategy;
 
     if (formData.biddingStrategy === "Manual CPC") {
-      finalBiddingStrategy = `Manual CPC (${
-        formData.manualCpcTrueFalse ? "True" : "False"
-      })`;
+      finalBiddingStrategy = `Manual CPC`;
     }
     if (formData.biddingStrategy === "Maximize Clicks") {
-      finalBiddingStrategy = `Maximize Clicks (${formData.maximizeClicksNumber})`;
+      finalBiddingStrategy = `Maximize Clicks`;
     }
     if (formData.biddingStrategy === "Target Impression Share") {
-      finalBiddingStrategy = `Target Impression Share (${formData.targetImpressionShareNumber})`;
+      finalBiddingStrategy = `Target Impression Share`;
     }
 
+    const { headlinesOptions, descriptionsOptions, keywordsOptions, ...rest } =
+      formData;
+
+    const transformedHeadlines = formData.headlines.map(
+      (headline) => headline.value
+    );
+    const transformedDescriptions = formData.descriptions.map(
+      (description) => description.value
+    );
+
+    const transformedKeywords = formData.keywords.map(
+      (keyword) => keyword.value
+    );
+
     return {
-      ...formData,
+      ...rest,
       biddingStrategy: finalBiddingStrategy,
+      headlines: transformedHeadlines,
+      descriptions: transformedDescriptions,
+      keywords: transformedKeywords,
     };
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
     const payload = preparePayload();
+    setFormData({
+      ...formData,
+      biddingValue: "",
+    });
     console.log("Form Data Submitted:", payload);
   };
 
@@ -235,7 +332,7 @@ const Page = () => {
               name="clientName"
               value={formData.clientName}
               onChange={handleChange}
-              placeholder="Enter Client Name (required + display field)"
+              placeholder="Enter Client Name"
             />
           </div>
           <div className="form_element">
@@ -245,13 +342,13 @@ const Page = () => {
               name="campaignName"
               value={formData.campaignName}
               onChange={handleChange}
-              placeholder="Enter Campaign Name (required + display field)"
+              placeholder="Enter Campaign Name"
             />
           </div>
           <div className="form_element">
             <label>Start date</label>
             <input
-              type="text"
+              type="date"
               name="startDate"
               value={formData.startDate}
               onChange={handleChange}
@@ -261,29 +358,37 @@ const Page = () => {
           <div className="form_element">
             <label>End date</label>
             <input
-              type="text"
+              type="date"
               name="endDate"
               value={formData.endDate}
               onChange={handleChange}
               placeholder="Enter End Date"
             />
           </div>
-          <div className="form_element">
+
+          <div className="form_element select_form_element">
             <label>Platform</label>
-            <input
-              type="text"
-              name="platform"
-              value={formData.platform}
-              onChange={handleChange}
-              placeholder="Enter Platform"
+            <Select
+              options={platformOptions}
+              value={selectedPlatform}
+              onChange={setSelectedPlatform}
+              isClearable
+              styles={{
+                placeholder: (base) => ({
+                  ...base,
+                  display: "block",
+                }),
+              }}
+              placeholder="Please Select"
             />
           </div>
+
           <div className="form_element">
             <label>Call Ads Phone number</label>
             <input
               type="tel"
               name="phoneNumber"
-              value={formData.phoneNumber}
+              value={formData.adPhoneNumber}
               onChange={handleChange}
               placeholder="Enter Call Ads Phone number"
             />
@@ -297,6 +402,20 @@ const Page = () => {
               value={formData.landingUrl}
               onChange={handleChange}
               placeholder="Enter Landing Page URL"
+            />
+          </div>
+
+          <div className="form_element">
+            <label>Match Type</label>
+            <Select
+              options={matchTypeOptions}
+              value={matchTypeOptions.find(
+                (option) => option.value === formData.matchType
+              )}
+              onChange={(selectedOption) =>
+                setFormData({ ...formData, matchType: selectedOption.value })
+              }
+              placeholder="Select Match Type"
             />
           </div>
 
@@ -320,8 +439,7 @@ const Page = () => {
                 options={manualCpcOptions}
                 value={manualCpcOptions.find(
                   (option) =>
-                    option.value ===
-                    (formData.manualCpcTrueFalse ? "true" : "false")
+                    option.value === (formData.biddingValue ? "true" : "false")
                 )}
                 onChange={handleManualCpcChange}
                 placeholder="Select True or False"
@@ -337,8 +455,8 @@ const Page = () => {
                 type="number"
                 value={
                   formData.biddingStrategy === "Maximize Clicks"
-                    ? formData.maximizeClicksNumber
-                    : formData.targetImpressionShareNumber
+                    ? formData.biddingValue
+                    : formData.biddingValue
                 }
                 onChange={(e) =>
                   handleNumberChange(
@@ -350,14 +468,6 @@ const Page = () => {
                 }
                 placeholder="Enter Number"
               />
-            </div>
-          )}
-
-          {["Maximize Conversions", "Maximize Conversion Value"].includes(
-            formData.biddingStrategy
-          ) && (
-            <div className="form_element">
-              <p>{formData.biddingStrategy} selected. No additional fields.</p>
             </div>
           )}
 
@@ -408,17 +518,6 @@ const Page = () => {
           </div>
 
           <div className="form_element">
-            <label>Keywords</label>
-            <input
-              type="text"
-              name="keywords"
-              value={formData.keywords}
-              onChange={handleChange}
-              placeholder="Enter Keywords"
-            />
-          </div>
-
-          <div className="form_element">
             <label>Ad Name</label>
             <input
               type="text"
@@ -428,6 +527,7 @@ const Page = () => {
               placeholder="Enter Ad Name"
             />
           </div>
+
           <div className="form_element">
             <label>Final URL</label>
             <input
@@ -438,26 +538,6 @@ const Page = () => {
               placeholder="Enter Final URL"
             />
           </div>
-
-          <div className="form_element">
-  <label>Headlines</label>
-  <Select
-    options={formData.headlines}
-    isMulti
-    placeholder="Select Headlines"
-  />
-</div>
-
-<div className="form_element">
-  <label>Descriptions</label>
-  <Select
-    options={formData.descriptions}
-    isMulti
-    placeholder="Select Descriptions"
-  />
-</div>
-
-
 
           <div className="form_element">
             <label>Client Comment</label>
@@ -489,6 +569,44 @@ const Page = () => {
               value={formData.dailyBudget}
               onChange={handleChange}
               placeholder="Enter Daily Budget"
+            />
+          </div>
+
+          <div className="form_element">
+            <label>Keywords</label>
+            <Select
+              options={formData.keywordsOptions}
+              isMulti
+              value={formData.keywords}
+              onChange={(selectedOptions) => {
+                setFormData({
+                  ...formData,
+                  keywords: selectedOptions,
+                });
+              }}
+              placeholder="Select Keywords"
+            />
+          </div>
+
+          <div className="form_element">
+            <label>Headlines</label>
+            <Select
+              options={formData.headlinesOptions}
+              isMulti
+              value={formData.headlines}
+              onChange={handleHeadlinesChange}
+              placeholder="Select Headlines"
+            />
+          </div>
+
+          <div className="form_element">
+            <label>Descriptions</label>
+            <Select
+              options={formData.descriptionsOptions}
+              isMulti
+              value={formData.descriptions}
+              onChange={handleDescriptionsChange}
+              placeholder="Select Descriptions"
             />
           </div>
 
