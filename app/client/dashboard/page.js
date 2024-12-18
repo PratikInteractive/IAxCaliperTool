@@ -25,6 +25,7 @@ export default function Page() {
   const [loading, setLoading] = useState(true);
   const rows = 10;
   const [first, setFirst] = useState(0);
+  const [status,setStatus] = "";
 
 
 
@@ -56,20 +57,22 @@ export default function Page() {
 
   const Approval = async (rowData) => {
     console.log("Approval Clicked");
-    console.log("Row Data", rowData.campaignId);
+    console.log("Row Data", rowData);
 
-    // const storedUserId = sessionStorage.getItem("user_id");
+    const storedUserId = sessionStorage.getItem("user_id");
     try {
       const payload = {
-        "loggedInUser": rowData.loggedInUser,
-        "campaignId": rowData.campaignId
+        "loggedInUser": storedUserId,
+        "campaignId": rowData.campaignId,
       };
+
+      console.log("Payload Approve", payload);
 
       const response = await axios.post(
         `${apiUrl}caliper/digitalEntrant/caliperSelfServeApi.jsp?action=approveCaliperCampaign`,
         payload
       );
-      console.log("response", response);
+      console.log("response accept click", response.data);
       if (response.data.result == "success") {
         Swal.fire({
           title: "Success!",
@@ -91,9 +94,11 @@ export default function Page() {
     console.log("Reject Clicked");
     console.log("Row Data", rowData.campaignId);
 
+
+    const storedUserId = sessionStorage.getItem("user_id");
     try {
       const payload = {
-        "loggedInUser": rowData.loggedInUser,
+        "loggedInUser": storedUserId,
         "campaignId": rowData.campaignId
       };
 
@@ -124,9 +129,10 @@ export default function Page() {
     console.log("Pause Clicked");
     console.log("Row Data", rowData.campaignId);
 
+    const storedUserId = sessionStorage.getItem("user_id");
     try {
       const payload = {
-        "loggedInUser": rowData.loggedInUser,
+        "loggedInUser": storedUserId,
         "campaignId": rowData.campaignId
       };
 
@@ -154,6 +160,18 @@ export default function Page() {
     }
   }
 
+
+  const isDrafted = (status) => {
+    return status === "drafted";
+  };
+
+  const isPending = (status) => {
+    return status === "pending";
+  }
+
+  const isApprovedOrRejected = (status) => {
+    return status === "approved" || "rejected";
+  }
 
   return (
     <div className={`container ${styles.dashboard}`}>
@@ -184,12 +202,11 @@ export default function Page() {
           header="Approval"
           body={(rowData) => (
             <div className="action-buttons">
-              <button
-                className="btn primary sm"
-                onClick={() => Approval(rowData)}
-              >
-                Approve
-              </button>
+              {!isDrafted(rowData.status) && (
+                <button className="btn success" onClick={() => Approval(rowData)}>
+                  Approve
+                </button>
+              )}
             </div>
           )}
           bodyClassName="text-center"
@@ -198,12 +215,12 @@ export default function Page() {
           header="Reject"
           body={(rowData) => (
             <div className="action-buttons">
-              <button
-                className="btn primary sm"
-                onClick={() => Reject(rowData)}
-              >
-                Reject
-              </button>
+               {!isDrafted(rowData.status) && (
+                <button className="btn reject" onClick={() => Reject(rowData)}>
+                  Approve
+                </button>
+              )}
+
             </div>
           )}
           bodyClassName="text-center"
@@ -212,12 +229,11 @@ export default function Page() {
           header="Pause"
           body={(rowData) => (
             <div className="action-buttons">
-              <button
-                className="btn primary sm"
-                onClick={() => Pause(rowData)}
-              >
-                Pause
-              </button>
+              {!isDrafted(rowData.status) && (
+                <button className="btn pause" onClick={() => Pause(rowData)}>
+                  Approve
+                </button>
+              )}
             </div>
           )}
           bodyClassName="text-center"
