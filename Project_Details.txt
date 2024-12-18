@@ -81,3 +81,14 @@ description - disply
 client_comment - disply
 total budget - disply
 daily budget - calculate 
+
+:: 18-12-2024 ::
+-- Fetching Keyword from seperate api
+-- Forgot Password api
+-- Country Selection India if needed
+-- Actions on Client screen
+-- CORS error
+-- user should not be able to access all pages ( fixing redirections )
+-- calculating daily budget on campaign creation page
+-- post method on campaign creation page
+-- edit client page ( dropdowns for 4 fields )
