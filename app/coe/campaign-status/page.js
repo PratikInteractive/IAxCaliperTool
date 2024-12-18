@@ -132,7 +132,6 @@ const Page = () => {
             landingUrl:
               campaignData.caliperClientDataSetup?.landingPageUrl || "",
             biddingStrategy: campaignData.biddingStrategy || "",
-            network: campaignData.network || "",
             industry: campaignData.caliperClientDataSetup?.industry || "",
             subIndustry: campaignData.caliperClientDataSetup?.subIndustry || "",
             keywordsOptions: campaignData.keywords.map((k) => ({
@@ -449,27 +448,27 @@ const Page = () => {
 
           {(formData.biddingStrategy === "Maximize Clicks" ||
             formData.biddingStrategy === "Target Impression Share") && (
-            <div className="form_element">
-              <label>Number (Maximize Clicks / Target Impression Share)</label>
-              <input
-                type="number"
-                value={
-                  formData.biddingStrategy === "Maximize Clicks"
-                    ? formData.biddingValue
-                    : formData.biddingValue
-                }
-                onChange={(e) =>
-                  handleNumberChange(
-                    e,
+              <div className="form_element">
+                <label>Number (Maximize Clicks / Target Impression Share)</label>
+                <input
+                  type="number"
+                  value={
                     formData.biddingStrategy === "Maximize Clicks"
-                      ? "maximizeClicksNumber"
-                      : "targetImpressionShareNumber"
-                  )
-                }
-                placeholder="Enter Number"
-              />
-            </div>
-          )}
+                      ? formData.biddingValue
+                      : formData.biddingValue
+                  }
+                  onChange={(e) =>
+                    handleNumberChange(
+                      e,
+                      formData.biddingStrategy === "Maximize Clicks"
+                        ? "maximizeClicksNumber"
+                        : "targetImpressionShareNumber"
+                    )
+                  }
+                  placeholder="Enter Number"
+                />
+              </div>
+            )}
 
           <div className="form_element">
             <label>Network</label>
