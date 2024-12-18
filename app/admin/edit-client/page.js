@@ -3,7 +3,7 @@
 
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { useRouter, useSearchParams } from "next/navigation";
+// import { useRouter, useSearchParams } from "next/navigation";
 import Select from "react-select";
 import Swal from "sweetalert2";
 
@@ -11,15 +11,33 @@ export default function EditClientPage() {
   const [clientData, setClientData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [formValues, setFormValues] = useState({});
-  const router = useRouter();
-  const searchParams = useSearchParams();
-  const clientName = searchParams.get("clientName");
+  // const router = useRouter();
+  // const searchParams = useSearchParams();
+  // const clientName = searchParams.get("clientName");
   const apiUrl = process.env.NEXT_PUBLIC_API_URL;
   const radiusUnitOptions = [
     { value: "KILOMETERS", label: "Kilometers" },
     { value: "MILES", label: "Miles" },
   ];
 
+    const platformOptions = [
+      { value: "Search", label: "Search" },
+      // { value: "P-Max", label: "P-Max" },
+  ];
+  const [selectedPlatform, setSelectedPlatform] = useState(platformOptions[0]);
+
+  // const clientName = sessionStorage.getItem("clientName");
+
+  const [clientName, setClientName] = useState("");
+  console.log("Client Name", clientName);
+
+  // Safely fetch client name from sessionStorage in the browser
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const name = sessionStorage.getItem("clientName");
+      setClientName(name || "");
+    }
+  }, []);
   // Fetch client data
   useEffect(() => {
     const fetchClientData = async () => {
@@ -198,7 +216,7 @@ export default function EditClientPage() {
               onChange={handleChange}
             />
           </div>
-          <div className="form_element">
+          {/* <div className="form_element">
             <label>Client Email</label>
             <input
               type="email"
@@ -208,7 +226,7 @@ export default function EditClientPage() {
               onChange={handleChange}
               required
             />
-          </div>
+          </div> */}
           <div className="form_element">
             <label>Landing Page URL</label>
             <input
@@ -311,7 +329,7 @@ export default function EditClientPage() {
             <input
               type="text"
               name="googleAccountId"
-              value={formValues.googleAccountId}
+              value={formValues.googleAccountId || ""}
               onChange={handleChange}
               required
               placeholder="Please Enter (required)"
@@ -369,12 +387,19 @@ export default function EditClientPage() {
 
           <div className="form_element">
             <label>Platform</label>
-            <input
-              type="number"
-              name="platform"
+            <Select
+              options={platformOptions}
+              value={selectedPlatform}
+              onChange={setSelectedPlatform}
+              isClearable
+              styles={{
+                placeholder: (base) => ({
+                  ...base,
+                  display: "block",
+                }),
+              }}
               placeholder="Platform"
-              value={formValues.platform || ""}
-              onChange={handleChange}
+              required
             />
           </div>
 

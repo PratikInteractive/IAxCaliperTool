@@ -161,17 +161,41 @@ export default function Page() {
   }
 
 
-  const isDrafted = (status) => {
-    return status === "drafted";
+  const getActionButtons = (status, rowData) => {
+    switch (status) {
+      case "drafted":
+        return null; // Don't show any buttons
+      case "pending":
+        return (
+          <>
+            <button className="btn success" onClick={() => Approval(rowData)}>
+              Approve
+            </button>
+            <button className="btn primary reject" onClick={() => Reject(rowData)}>
+              Reject
+            </button>
+          </>
+        );
+      case "approved":
+        return null; // Don't show any buttons
+      case "rejected":
+        return null; // Don't show any buttons
+      case "live":
+        return (
+          <button className="btn primary pause" onClick={() => Pause(rowData)}>
+            Pause
+          </button>
+        );
+      case "paused":
+        return (
+          <button className="btn success" onClick={() => Approval(rowData)}>
+            Approve
+          </button>
+        );
+      default:
+        return null;
+    }
   };
-
-  const isPending = (status) => {
-    return status === "pending";
-  }
-
-  const isApprovedOrRejected = (status) => {
-    return status === "approved" || "rejected";
-  }
 
   return (
     <div className={`container ${styles.dashboard}`}>
@@ -198,7 +222,7 @@ export default function Page() {
         <Column field="endDate" header="End Date" />
         <Column field="dailyBudget" header="Total Budget" sortable />
         <Column field="status" header="Status" />
-        <Column
+        {/* <Column
           header="Approval"
           body={(rowData) => (
             <div className="action-buttons">
@@ -234,6 +258,15 @@ export default function Page() {
                   Approve
                 </button>
               )}
+            </div>
+          )}
+          bodyClassName="text-center"
+        /> */}
+         <Column
+          header="Actions"
+          body={(rowData) => (
+            <div className="action-buttons">
+              {getActionButtons(rowData.status, rowData)}
             </div>
           )}
           bodyClassName="text-center"

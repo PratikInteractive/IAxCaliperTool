@@ -54,7 +54,10 @@ export default function Page() {
   // Edit Functionality
   const handleEditClient = (clientName) => {
     // console.log("Editing Client:", clientName); 
-    router.push(`/admin/edit-client?clientName=${encodeURIComponent(clientName)}`); 
+    // router.push(`/admin/edit-client?clientName=${encodeURIComponent(clientName)}`); 
+
+    sessionStorage.setItem('clientName',clientName);
+    window.location.href = "/admin/edit-client";
   };
 
   return (
