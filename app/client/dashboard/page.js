@@ -253,7 +253,11 @@ export default function Page() {
         <Column field="startDate" header="Start Date" />
         <Column field="endDate" header="End Date" />
         <Column field="totalBudget" header="Total Budget" sortable />
-        <Column field="status" header="Status" />
+        <Column field="status" header="Status" 
+                  body={(rowData) => (
+                    <span className={rowData.status}> {rowData.status.charAt(0).toUpperCase() + rowData.status.slice(1)}</span>
+                  )}
+        />
         <Column field="comment" header="Rejection Comment" />
         {/* <Column
           header="Approval"

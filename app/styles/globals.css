@@ -15,6 +15,7 @@
 html {
     font-size: 16px;
 }
+
 a {
     text-decoration: none;
 }
@@ -51,9 +52,11 @@ h3,
     max-width: 90%;
     margin: 0 auto;
 }
+
 input {
     font-size: 0.875rem;
 }
+
 input:focus {
     outline: none;
 }
@@ -72,10 +75,12 @@ input:focus {
     justify-content: center;
     align-items: center;
 }
+
 .btn.secondary {
     background-color: var(--secondaryColor);
     border: 1px solid var(--secondaryColor);
 }
+
 .btn.success {
     background: #34c759;
     border-color: #34c759;
@@ -83,6 +88,7 @@ input:focus {
     padding: 5px 10px;
     font-size: 10px;
 }
+
 .btn.reject {
     background: #f56969;
     padding: 5px 10px;
@@ -90,6 +96,7 @@ input:focus {
     border-color: #f56969;
     color: #fff;
 }
+
 .btn.pause {
     background: #ffcc00;
     padding: 5px 10px;
@@ -149,6 +156,7 @@ table .p-column-header-content {
     font-size: 0.875rem;
     color: #464646;
 }
+
 .form_element.form_element_headline {
     grid-column: 1 / 1;
 }
@@ -164,12 +172,15 @@ table .p-column-header-content {
     justify-content: space-between;
     gap: 10px;
 }
+
 .multiple_inputs .input_blocks {
     width: 90%;
 }
+
 .multiple_inputs .input_blocks input {
     width: 100%;
 }
+
 .multiple_inputs button {
     width: 5%;
     height: 41px;
@@ -180,6 +191,7 @@ table .p-column-header-content {
     font-size: 1.25rem;
 
 }
+
 .multiple_inputs .dynamic_input {
     margin-bottom: 15px;
 }
@@ -189,6 +201,38 @@ table .p-column-header-content {
     display: flex;
     gap: 10px;
 }
+
+/* Status colors */
+.drafted {
+    color: #A0A0A0;
+    font-weight: 500;
+}
+
+.pending {
+    color: #FFC107;
+    font-weight: 500;
+}
+
+.approved {
+    color: #28A745;
+    font-weight: 500;
+}
+
+.rejected {
+    color: #DC3545;
+    font-weight: 500;
+}
+
+.live {
+    color: #007BFF;
+    font-weight: 500;
+}
+
+.paused {
+    color: #FD7E14;
+    font-weight: 500;
+}
+
 
 @media screen and (max-width: 1440px) {
     html {
