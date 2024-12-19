@@ -8,8 +8,8 @@ const Page = () => {
   const [formData, setFormData] = useState({
     clientName: "",
     campaignName: "",
-    startDate: "",
-    endDate: "",
+    campaignStartDate: "",
+    campaignEndDate: "",
     platform: "",
     phoneNumber: "",
     landingUrl: "",
@@ -18,7 +18,7 @@ const Page = () => {
     subIndustry: "",
     keywords: [],
     adName: "",
-    finalUrl: "",
+    landingPageUrl: "",
     headlines: [],
     descriptions: [],
     clientComment: "",
@@ -91,31 +91,13 @@ const Page = () => {
     });
   };
 
-  const calculateDailyBudget = () => {
-    const { totalBudget, startDate, endDate } = formData;
-    if (totalBudget && startDate && endDate) {
-      const start = new Date(startDate);
-      const end = new Date(endDate);
-      const days = Math.max((end - start) / (1000 * 60 * 60 * 24) + 1, 1); // Ensure at least 1 day
-      const dailyBudget = (parseFloat(totalBudget) / days).toFixed(2);
-      return dailyBudget;
-    }
-    return "";
-  };
-
-  useEffect(() => {
-    const dailyBudget = calculateDailyBudget();
-    setFormData((prevData) => ({ ...prevData, dailyBudget }));
-  }, [formData.totalBudget, formData.startDate, formData.endDate]);
-
-
-
   const selectedNetworkOptions = networkOptions.filter(
     (option) => formData[option.value] === "true"
   );
 
   useEffect(() => {
     const savedCampaign = sessionStorage.getItem("selectedCampaign");
+    console.log("savedCampaign", savedCampaign);
     const userId = sessionStorage.getItem("user_id");
 
     if (savedCampaign && userId) {
@@ -144,8 +126,8 @@ const Page = () => {
           setFormData({
             clientName: campaignData.clientName || "",
             campaignName: campaignData.campaignName || "",
-            startDate: formattedStartDate || "",
-            endDate: formattedEndDate || "",
+            campaignStartDate: formattedStartDate || "",
+            campaignEndDate: formattedEndDate || "",
             platform: campaignData.platform || "Search",
             phoneNumber: campaignData.caliperClientDataSetup?.phoneNumber || "",
             landingUrl:
@@ -158,7 +140,7 @@ const Page = () => {
               label: k.keyword,
             })),
             adName: campaignData.adName || "",
-            finalUrl: campaignData.finalUrl || "",
+            landingPageUrl: campaignData.finalUrl || "",
             headlinesOptions:
               campaignData.headlines?.map((headline) => ({
                 value: headline,
@@ -178,6 +160,8 @@ const Page = () => {
             isTargetSearchNetwork: "false",
             isTargetContentNetwork: "false",
             isTargetPartnerSearchNetwork: "false",
+            objective: "sales",
+            biddingValue: "",
           });
           const locationData = campaignData.caliperClientDataSetup;
           setLocationOptions([
@@ -330,12 +314,90 @@ const Page = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    const payload = preparePayload();
+
+    const {
+      loggedInUser = sessionStorage.getItem("user_id"),
+      campaignId = JSON.parse(sessionStorage.getItem("selectedCampaign"))
+        ?.campaignId,
+      clientName = formData.clientName,
+      campaignName = formData.campaignName,
+      campaignStartDate,
+      campaignEndDate,
+      platform,
+      biddingStrategy,
+      biddingValue,
+      isTargetGoogleSearch,
+      isTargetSearchNetwork,
+      isTargetContentNetwork,
+      isTargetPartnerSearchNetwork,
+      landingPageUrl,
+      adName,
+      headlines,
+      descriptions,
+      latitude,
+      longitude,
+      radius,
+      radiusUnit,
+      state,
+      city,
+      pincode,
+      objective,
+      keywords,
+      matchType,
+    } = formData;
+
+    const payload = {
+      loggedInUser,
+      campaignId,
+      clientName,
+      campaignName,
+      campaignStartDate,
+      campaignEndDate,
+      platform,
+      biddingStrategy,
+      biddingValue,
+      isTargetGoogleSearch,
+      isTargetSearchNetwork,
+      isTargetContentNetwork,
+      isTargetPartnerSearchNetwork,
+      landingPageUrl,
+      adName,
+      headlines: headlines.map((item) => item.value),
+      descriptions: descriptions.map((item) => item.value),
+      latitude,
+      longitude,
+      radius,
+      radiusUnit,
+      state,
+      city,
+      pincode,
+      objective,
+      keywords: keywords.map((item) => item.value),
+      matchType,
+    };
+
+    const preparedPayload = preparePayload();
+    console.log("Prepared Payload:", preparedPayload);
+
     setFormData({
       ...formData,
       biddingValue: "",
     });
+
     console.log("Form Data Submitted:", payload);
+
+
+    axios
+      .post(
+        "http://15.207.141.243:8080/web/pages/caliper/digitalEntrant/caliperSelfServeApi.jsp?action=createNewCampaign",
+        payload
+      )
+      .then((response) => {
+        console.log("API Response:", response.data);
+      })
+      .catch((error) => {
+        console.error("Error posting data:", error);
+      });
   };
 
   return (
@@ -367,8 +429,8 @@ const Page = () => {
             <label>Start date</label>
             <input
               type="date"
-              name="startDate"
-              value={formData.startDate}
+              name="campaignStartDate"
+              value={formData.campaignStartDate}
               onChange={handleChange}
               placeholder="Enter Start Date"
             />
@@ -377,8 +439,8 @@ const Page = () => {
             <label>End date</label>
             <input
               type="date"
-              name="endDate"
-              value={formData.endDate}
+              name="campaignEndDate"
+              value={formData.campaignEndDate}
               onChange={handleChange}
               placeholder="Enter End Date"
             />
@@ -467,27 +529,27 @@ const Page = () => {
 
           {(formData.biddingStrategy === "Maximize Clicks" ||
             formData.biddingStrategy === "Target Impression Share") && (
-              <div className="form_element">
-                <label>Number (Maximize Clicks / Target Impression Share)</label>
-                <input
-                  type="number"
-                  value={
+            <div className="form_element">
+              <label>Number (Maximize Clicks / Target Impression Share)</label>
+              <input
+                type="number"
+                value={
+                  formData.biddingStrategy === "Maximize Clicks"
+                    ? formData.biddingValue
+                    : formData.biddingValue
+                }
+                onChange={(e) =>
+                  handleNumberChange(
+                    e,
                     formData.biddingStrategy === "Maximize Clicks"
-                      ? formData.biddingValue
-                      : formData.biddingValue
-                  }
-                  onChange={(e) =>
-                    handleNumberChange(
-                      e,
-                      formData.biddingStrategy === "Maximize Clicks"
-                        ? "maximizeClicksNumber"
-                        : "targetImpressionShareNumber"
-                    )
-                  }
-                  placeholder="Enter Number"
-                />
-              </div>
-            )}
+                      ? "maximizeClicksNumber"
+                      : "targetImpressionShareNumber"
+                  )
+                }
+                placeholder="Enter Number"
+              />
+            </div>
+          )}
 
           <div className="form_element">
             <label>Network</label>
@@ -550,8 +612,8 @@ const Page = () => {
             <label>Final URL</label>
             <input
               type="text"
-              name="finalUrl"
-              value={formData.finalUrl}
+              name="landingPageUrl"
+              value={formData.landingPageUrl}
               onChange={handleChange}
               placeholder="Enter Final URL"
             />
@@ -586,8 +648,7 @@ const Page = () => {
               name="dailyBudget"
               value={formData.dailyBudget}
               onChange={handleChange}
-              placeholder="Daily Budget will be auto-calculated"
-              readOnly
+              placeholder="Enter Daily Budget"
             />
           </div>
 
