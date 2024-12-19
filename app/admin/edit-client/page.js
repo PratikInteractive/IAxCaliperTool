@@ -11,22 +11,29 @@ export default function EditClientPage() {
   const [clientData, setClientData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [formValues, setFormValues] = useState({});
-  // const router = useRouter();
-  // const searchParams = useSearchParams();
-  // const clientName = searchParams.get("clientName");
+  const [stateOptions, setStateOptions] = useState([]);
+  const [selectedState, setSelectedState] = useState(null);
+  const [stateData, setStateData] = useState({});
+  const [subCityOptions, setSubCityOptions] = useState([]);
+  const [selectedSubCity, setSselectedSubCity] = useState(null);
+  const [industryOptions, setIndustryOptions] = useState([]);
+  const [subIndustryOptions, setSubIndustryOptions] = useState([]);
+  const [selectedIndustry, setSelectedIndustry] = useState(null);
+  const [selectedSubIndustry, setSelectedSubIndustry] = useState(null);
+  const [industryData, setIndustryData] = useState({});
+
   const apiUrl = process.env.NEXT_PUBLIC_API_URL;
   const radiusUnitOptions = [
     { value: "KILOMETERS", label: "Kilometers" },
     { value: "MILES", label: "Miles" },
   ];
 
-    const platformOptions = [
-      { value: "Search", label: "Search" },
-      // { value: "P-Max", label: "P-Max" },
+  const platformOptions = [
+    { value: "Search", label: "Search" },
+    // { value: "P-Max", label: "P-Max" },
   ];
   const [selectedPlatform, setSelectedPlatform] = useState(platformOptions[0]);
 
-  // const clientName = sessionStorage.getItem("clientName");
 
   const [clientName, setClientName] = useState("");
   console.log("Client Name", clientName);
@@ -43,8 +50,8 @@ export default function EditClientPage() {
     const fetchClientData = async () => {
       try {
         const loggedInUser = sessionStorage.getItem("user_id");
-        if (!clientName) {
-          console.error("Client name is missing in the query parameter.");
+        if (!loggedInUser) {
+          console.error("Please Log in");
           return;
         }
 
@@ -93,34 +100,92 @@ export default function EditClientPage() {
     setFormValues({ ...formValues, [name]: value });
   };
 
+  // Fetch industry data
+  useEffect(() => {
+    const fetchIndustryData = async () => {
+      try {
+        const response = await axios.get(
+          `${apiUrl}caliper/digitalEntrant/caliperSelfServeApi.jsp?action=viewIndustryDetails`
+        );
+
+        const data = response.data.industryVsSubindustryMap;
+        setIndustryData(data);
+
+        const industries = Object.keys(data).map((industry) => ({
+          label: industry,
+          value: industry,
+        }));
+
+        setIndustryOptions(industries);
+      } catch (error) {
+        console.error("Error fetching industry data:", error.message);
+      }
+    };
+
+    fetchIndustryData();
+  }, []);
+
+  const handleIndustryChange = (selectedOption) => {
+    setSelectedIndustry(selectedOption);
+    console.log("Selected Industry:", selectedOption); // Log selected industry
+
+    // Get the sub-industry options for the selected industry
+    const subIndustries = industryData[selectedOption.value] || [];
+    console.log("Sub-industries for", selectedOption.value, ":", subIndustries); // Log corresponding sub-industries
+
+    // Convert sub-industries to the format required by react-select
+    const subIndustryOptionsFormatted = subIndustries.map((subIndustry) => ({
+      label: subIndustry,
+      value: subIndustry,
+    }));
+
+    // Update sub-industry options
+    setSubIndustryOptions(subIndustryOptionsFormatted);
+    setSelectedSubIndustry(null); // Reset sub-industry selection
+  };
+
   // Fetching State and City
-    // Fetch city and state data
-    useEffect(() => {
-      const fetchCityStateData = async () => {
-        try {
-          const response = await axios.get(
-            `${apiUrl}caliper/digitalEntrant/caliperSelfServeApi.jsp?action=viewGoogleLocations`
-          );
-    
-          const data = response.data.completeMap.India;
-          console.log("State City Data",data);
-          // Store state and city mapping
-          setStateData(data);
-    
-          // Format state options for dropdown
-          const states = Object.keys(data).map((state) => ({
-            label: state,
-            value: state,
-          }));
-    
-          setStateOptions(states);
-        } catch (error) {
-          console.error("Error fetching city/state data:", error.message);
-        }
-      };
-    
-      fetchCityStateData();
-    }, []);
+  useEffect(() => {
+    const fetchCityStateData = async () => {
+      try {
+        const response = await axios.get(
+          `${apiUrl}caliper/digitalEntrant/caliperSelfServeApi.jsp?action=viewGoogleLocations`
+        );
+
+        const data = response.data.completeMap.India;
+        console.log("State City Data", data);
+        setStateData(data);
+
+        const states = Object.keys(data).map((state) => ({
+          label: state,
+          value: state,
+        }));
+
+        setStateOptions(states);
+      } catch (error) {
+        console.error("Error fetching city/state data:", error.message);
+      }
+    };
+
+    fetchCityStateData();
+  }, []);
+
+  const handleStateChange = (selectedOption) => {
+    setSelectedState(selectedOption);
+
+    if (selectedOption) {
+      const cities = stateData[selectedOption.value] || [];
+      const cityOptionsFormatted = cities.map((city) => ({
+        label: city,
+        value: city,
+      }));
+
+      setSubCityOptions(cityOptionsFormatted);
+      setSselectedSubCity(null); // Reset city selection
+    }
+  };
+
+
 
   // Handle form submission
   const handleSubmit = async (e) => {
@@ -179,6 +244,10 @@ export default function EditClientPage() {
     return <p>No client data found for "{clientName}".</p>;
   }
 
+
+
+
+
   return (
     <div className="container mt-2">
       <h2 className="mb-2">Editing Client</h2>
@@ -196,37 +265,38 @@ export default function EditClientPage() {
               readOnly
             />
           </div>
-          <div className="form_element">
-            <label>Industry</label>
-            <input
-              type="text"
-              name="industry"
-              placeholder="Industry"
-              value={formValues.industry || ""}
-              onChange={handleChange}
-            />
-          </div>
-          <div className="form_element">
-            <label>Sub-Industry</label>
-            <input
-              type="text"
-              name="subIndustry"
-              placeholder="Sub-Industry"
-              value={formValues.subIndustry || ""}
-              onChange={handleChange}
-            />
-          </div>
-          {/* <div className="form_element">
-            <label>Client Email</label>
-            <input
-              type="email"
-              name="clientEmail"
-              placeholder="Email id (required)"
-              value={formValues.clientEmail || ""}
-              onChange={handleChange}
+          <div className="form_element select_form_element">
+            <label>Select Industry</label>
+            <Select
+              options={industryOptions}
+              value={selectedIndustry}
+              onChange={handleIndustryChange}
+              placeholder="Select Industry"
+              styles={{
+                placeholder: (base) => ({
+                  ...base,
+                  display: "block",
+                }),
+              }}
               required
             />
-          </div> */}
+          </div>
+
+          <div className="form_element select_form_element">
+            <label>Select Sub Industry</label>
+            <Select
+              options={subIndustryOptions}
+              value={selectedSubIndustry}
+              onChange={setSelectedSubIndustry}
+              placeholder="Please Select"
+              styles={{
+                placeholder: (base) => ({
+                  ...base,
+                  display: "block",
+                }),
+              }}
+            />
+          </div>
           <div className="form_element">
             <label>Landing Page URL</label>
             <input
@@ -247,26 +317,37 @@ export default function EditClientPage() {
               onChange={handleChange}
             />
           </div>
-
-          <div className="form_element">
+          <div className="form_element select_form_element">
             <label>Select State</label>
-            <input
-              type="text"
-              name="state"
-              placeholder="Please Enter State"
-              value={formValues.state || ""}
-              onChange={handleChange}
+            <Select
+              options={stateOptions}
+              value={selectedState}
+              onChange={handleStateChange}
+              placeholder="Select State"
+              styles={{
+                placeholder: (base) => ({
+                  ...base,
+                  display: "block",
+                }),
+              }}
+              required
             />
           </div>
 
-          <div className="form_element">
+          <div className="form_element select_form_element">
             <label>Select City</label>
-            <input
-              type="text"
-              name="city"
-              placeholder="Please Enter City"
-              value={formValues.city || ""}
-              onChange={handleChange}
+            <Select
+              options={subCityOptions}
+              value={selectedSubCity}
+              onChange={setSselectedSubCity}
+              placeholder="Please Select a City"
+              styles={{
+                placeholder: (base) => ({
+                  ...base,
+                  display: "block",
+                }),
+              }}
+              required
             />
           </div>
 

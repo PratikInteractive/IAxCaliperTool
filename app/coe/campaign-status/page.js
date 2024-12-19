@@ -66,9 +66,9 @@ const Page = () => {
   ];
 
   const matchTypeOptions = [
-    { value: "Exact", label: "Exact" },
-    { value: "Phrase", label: "Phrase" },
-    { value: "Broad", label: "Broad" },
+    { value: "EXACT", label: "Exact" },
+    { value: "PHRASE", label: "Phrase" },
+    { value: "BROAD", label: "Broad" },
   ];
 
   const handleNetworkChange = (selectedOptions) => {
