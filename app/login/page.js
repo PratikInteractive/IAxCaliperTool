@@ -39,6 +39,7 @@ const page = () => {
           const user_role = result.value;
           if (user_role.includes("caliper_admin")) {
             sessionStorage.setItem("role", "admin");
+            document.cookie = "role=admin"
             router.push("/admin/dashboard/");
           } else if (user_role === "caliper_client") {
             sessionStorage.setItem("role", "client");

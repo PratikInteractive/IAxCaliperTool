@@ -78,24 +78,24 @@ input:focus {
 }
 .btn.success {
     background: #34c759;
-    padding: 10px 14px;
-    font-size: 12px;
     border-color: #34c759;
-    color: #000;
+    color: #fff;
+    padding: 5px 10px;
+    font-size: 10px;
 }
 .btn.reject {
     background: #f56969;
-    padding: 10px 14px;
-    font-size: 12px;
+    padding: 5px 10px;
+    font-size: 10px;
     border-color: #f56969;
-    color: #000;
+    color: #fff;
 }
 .btn.pause {
     background: #ffcc00;
-    padding: 10px 14px;
-    font-size: 12px;
+    padding: 5px 10px;
+    font-size: 10px;
     border-color: #ffcc00;
-    color: #000;
+    color: #fff;
 }
 
 /* Table */
@@ -182,6 +182,12 @@ table .p-column-header-content {
 }
 .multiple_inputs .dynamic_input {
     margin-bottom: 15px;
+}
+
+/* Actions */
+.action-buttons {
+    display: flex;
+    gap: 10px;
 }
 
 @media screen and (max-width: 1440px) {
