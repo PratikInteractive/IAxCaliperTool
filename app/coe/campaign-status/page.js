@@ -3,8 +3,10 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import Select from "react-select";
+import Swal from "sweetalert2";
 
 const Page = () => {
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL;
   const [formData, setFormData] = useState({
     clientName: "",
     campaignName: "",
@@ -23,7 +25,6 @@ const Page = () => {
     descriptions: [],
     clientComment: "",
     totalBudget: "",
-    dailyBudget: "",
     biddingValue: "",
     isTargetGoogleSearch: "false",
     isTargetSearchNetwork: "false",
@@ -32,14 +33,18 @@ const Page = () => {
     adPhoneNumber: "",
     matchType: "",
     objective: "sales",
+    dailyBudget: "",
   });
 
   const [locationOptions, setLocationOptions] = useState([]);
+  const [dailyBudgetState, setDailyBudget] = useState(""); 
+
 
   const platformOptions = [
     { value: "Search", label: "Search" },
     // { value: "P-Max", label: "P-Max" },
   ];
+
   const [selectedPlatform, setSelectedPlatform] = useState(platformOptions[0]);
 
   const biddingStrategyOptions = [
@@ -96,100 +101,107 @@ const Page = () => {
   );
 
   useEffect(() => {
-    const savedCampaign = sessionStorage.getItem("selectedCampaign");
-    console.log("savedCampaign", savedCampaign);
-    const userId = sessionStorage.getItem("user_id");
-
-    if (savedCampaign && userId) {
-      const parsedCampaign = JSON.parse(savedCampaign);
-
-      const requestBody = {
-        loggedInUser: userId,
-        campaignName: parsedCampaign.campaignName,
-        campaignId: parsedCampaign.campaignId,
-        clientName: parsedCampaign.clientName,
-      };
-
-      axios
-        .post(
-          "http://15.207.141.243:8080/web/pages/caliper/digitalEntrant/caliperSelfServeApi.jsp?action=viewCampaignSetupDetails",
-          requestBody
-        )
-        .then((response) => {
-          console.log("API Response:", response.data);
-          const campaignData = response.data;
-          const formattedStartDate = formatDate(campaignData.startDate);
-          const formattedEndDate = formatDate(campaignData.endDate);
-
-          console.log("totalBudge", campaignData.totalBudget);
-
-          setFormData({
-            clientName: campaignData.clientName || "",
-            campaignName: campaignData.campaignName || "",
-            campaignStartDate: formattedStartDate || "",
-            campaignEndDate: formattedEndDate || "",
-            platform: campaignData.platform || "Search",
-            phoneNumber: campaignData.caliperClientDataSetup?.phoneNumber || "",
-            landingUrl:
-              campaignData.caliperClientDataSetup?.landingPageUrl || "",
-            biddingStrategy: campaignData.biddingStrategy || "",
-            industry: campaignData.caliperClientDataSetup?.industry || "",
-            subIndustry: campaignData.caliperClientDataSetup?.subIndustry || "",
-            keywordsOptions: campaignData.keywords.map((k) => ({
-              value: k.keyword,
-              label: k.keyword,
-            })),
-            adName: campaignData.adName || "",
-            landingPageUrl: campaignData.finalUrl || "",
-            headlinesOptions:
-              campaignData.headlines?.map((headline) => ({
-                value: headline,
-                label: headline,
-              })) || [],
-            descriptionsOptions:
-              campaignData.descriptions?.map((description) => ({
-                value: description,
-                label: description,
-              })) || [],
-            clientComment: campaignData.clientComment || "",
-            totalBudget: campaignData.totalBudget || "",
-            dailyBudget: campaignData.totalBudget || "",
-            adPhoneNumber:
-              campaignData.caliperClientDataSetup?.adPhoneNumber || "",
-            isTargetGoogleSearch: "false",
-            isTargetSearchNetwork: "false",
-            isTargetContentNetwork: "false",
-            isTargetPartnerSearchNetwork: "false",
-            objective: "sales",
-            biddingValue: "",
-          });
-          const locationData = campaignData.caliperClientDataSetup;
-          setLocationOptions([
-            { value: locationData.city, label: `City - ${locationData.city}` },
-            {
-              value: locationData.state,
-              label: `State - ${locationData.state}`,
-            },
-            {
-              value: `${locationData.latitude}/${locationData.longitude}`,
-              label: `Latitude/Longitude - ${locationData.latitude}/${locationData.longitude}`,
-            },
-            {
-              value: `${locationData.radius} ${locationData.radiusUnit}`,
-              label: `Radius - ${locationData.radius} ${locationData.radiusUnit}`,
-            },
-            {
-              value: locationData.pincode,
-              label: `Pincode - ${locationData.pincode}`,
-            },
-          ]);
-        })
-        .catch((error) => {
-          console.error("API Error:", error);
-          alert("Error fetching campaign details.");
-        });
-    }
+    const fetchCampaignDetails = async () => {
+      try {
+        const savedCampaign = sessionStorage.getItem("selectedCampaign");
+        console.log("savedCampaign", savedCampaign);
+        const userId = sessionStorage.getItem("user_id");
+  
+        if (savedCampaign && userId) {
+          const parsedCampaign = JSON.parse(savedCampaign);
+  
+          const requestBody = {
+            loggedInUser: userId,
+            campaignName: parsedCampaign.campaignName,
+            campaignId: parsedCampaign.campaignId,
+            clientName: parsedCampaign.clientName,
+          };
+  
+          const response = await axios.post(
+            `${apiUrl}caliper/digitalEntrant/caliperSelfServeApi.jsp?action=viewCampaignSetupDetails`,
+            requestBody
+          );
+  
+          if (response.data?.result === "success") {
+            console.log("API Response:", response.data);
+            const campaignData = response.data;
+            const formattedStartDate = formatDate(campaignData.startDate);
+            const formattedEndDate = formatDate(campaignData.endDate);
+  
+            console.log("totalBudget", campaignData.totalBudget);
+  
+            setFormData({
+              clientName: campaignData.clientName || "",
+              campaignName: campaignData.campaignName || "",
+              campaignStartDate: formattedStartDate || "",
+              campaignEndDate: formattedEndDate || "",
+              platform: campaignData.platform || "Search",
+              phoneNumber: campaignData.caliperClientDataSetup?.phoneNumber || "",
+              landingUrl:
+                campaignData.caliperClientDataSetup?.landingPageUrl || "",
+              biddingStrategy: campaignData.biddingStrategy || "",
+              industry: campaignData.caliperClientDataSetup?.industry || "",
+              subIndustry: campaignData.caliperClientDataSetup?.subIndustry || "",
+              keywordsOptions: campaignData.keywords.map((k) => ({
+                value: k.keyword,
+                label: k.keyword,
+              })),
+              adName: campaignData.adName || "",
+              landingPageUrl: campaignData.finalUrl || "",
+              headlinesOptions:
+                campaignData.headlines?.map((headline) => ({
+                  value: headline,
+                  label: headline,
+                })) || [],
+              descriptionsOptions:
+                campaignData.descriptions?.map((description) => ({
+                  value: description,
+                  label: description,
+                })) || [],
+              clientComment: campaignData.clientComment || "",
+              totalBudget: campaignData.totalBudget || "",
+              // dailyBudget: campaignData.dailyBudget || "",
+              adPhoneNumber:
+                campaignData.caliperClientDataSetup?.adPhoneNumber || "",
+              isTargetGoogleSearch: "false",
+              isTargetSearchNetwork: "false",
+              isTargetContentNetwork: "false",
+              isTargetPartnerSearchNetwork: "false",
+              objective: "sales",
+              biddingValue: "",
+            });
+  
+            const locationData = campaignData.caliperClientDataSetup;
+            setLocationOptions([
+              { value: locationData.city, label: `City - ${locationData.city}` },
+              {
+                value: locationData.state,
+                label: `State - ${locationData.state}`,
+              },
+              {
+                value: `${locationData.latitude}/${locationData.longitude}`,
+                label: `Latitude/Longitude - ${locationData.latitude}/${locationData.longitude}`,
+              },
+              {
+                value: `${locationData.radius} ${locationData.radiusUnit}`,
+                label: `Radius - ${locationData.radius} ${locationData.radiusUnit}`,
+              },
+              {
+                value: locationData.pincode,
+                label: `Pincode - ${locationData.pincode}`,
+              },
+            ]);
+          }
+        }
+      } catch (error) {
+        console.error("API Error:", error);
+        alert("Error fetching campaign details.");
+      }
+    };
+  
+    fetchCampaignDetails();
   }, []);
+  
 
   const formatDate = (dateString) => {
     const date = new Date(dateString);
@@ -198,6 +210,8 @@ const Page = () => {
     const day = date.getDate().toString().padStart(2, "0");
     return `${year}-${month}-${day}`;
   };
+
+
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -312,13 +326,29 @@ const Page = () => {
     };
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
+  const calculateDailyBudget = () => {
+    const { totalBudget, campaignStartDate, campaignEndDate } = formData;
+    if (totalBudget && campaignStartDate && campaignEndDate) {
+      const start = new Date(campaignStartDate);
+      const end = new Date(campaignEndDate);
+      const days = Math.max((end - start) / (1000 * 60 * 60 * 24) + 1, 1);
+      var dailyBudgetValue = (parseFloat(totalBudget) / days).toFixed(2);
+      setDailyBudget(dailyBudgetValue);
+    }
+    return "";
+  };
 
+  useEffect(() => {
+   calculateDailyBudget();
+  }, [formData.totalBudget, formData.campaignStartDate, formData.campaignEndDate]);
+
+
+  const handleSubmit = async (e) => { 
+    e.preventDefault();
+  
     const {
       loggedInUser = sessionStorage.getItem("user_id"),
-      campaignId = JSON.parse(sessionStorage.getItem("selectedCampaign"))
-        ?.campaignId,
+      campaignId = JSON.parse(sessionStorage.getItem("selectedCampaign"))?.campaignId,
       clientName = formData.clientName,
       campaignName = formData.campaignName,
       campaignStartDate,
@@ -344,8 +374,9 @@ const Page = () => {
       objective,
       keywords,
       matchType,
+      dailyBudget = dailyBudgetState,
     } = formData;
-
+  
     const payload = {
       loggedInUser,
       campaignId,
@@ -374,31 +405,66 @@ const Page = () => {
       objective,
       keywords: keywords.map((item) => item.value),
       matchType,
+      dailyBudget,
     };
-
+  
     const preparedPayload = preparePayload();
     console.log("Prepared Payload:", preparedPayload);
-
+  
     setFormData({
       ...formData,
       biddingValue: "",
     });
-
+  
     console.log("Form Data Submitted:", payload);
-
-
-    axios
-      .post(
-        "http://15.207.141.243:8080/web/pages/caliper/digitalEntrant/caliperSelfServeApi.jsp?action=createNewCampaign",
+  
+    try {
+      const response = await axios.post(
+        `${apiUrl}caliper/digitalEntrant/caliperSelfServeApi.jsp?action=createNewCampaign`,
         payload
-      )
-      .then((response) => {
-        console.log("API Response:", response.data);
-      })
-      .catch((error) => {
-        console.error("Error posting data:", error);
+      );
+  
+      if (response.status === 200 && response.data) {
+        const data = response.data;
+        console.log("API Response:", data);
+  
+        if (data.result === "success") {
+          Swal.fire({
+            title: "Success!",
+            text: "Campaign Created Successfully!",
+            icon: "success",
+            confirmButtonText: "OK",
+          }).then((result) => {
+            if (result.isConfirmed) {
+              window.location.href = "/coe/dashboard";
+            }
+          });
+        } else {
+          Swal.fire({
+            title: "Error!",
+            text: data.message || "Something went wrong.",
+            icon: "warning",
+            confirmButtonText: "OK",
+          }).then((result) => {
+            if (result.isConfirmed) {
+              window.location.href = "";
+            }
+          });
+        }
+      } else {
+        throw new Error(response.statusText || "Failed to submit form.");
+      }
+    } catch (error) {
+      console.error("Error posting data:", error);
+      Swal.fire({
+        title: "Error!",
+        text: error.message || "Failed to submit the form.",
+        icon: "error",
+        confirmButtonText: "OK",
       });
+    }
   };
+  
 
   return (
     <div className="container mt-2">
@@ -646,7 +712,7 @@ const Page = () => {
             <input
               type="text"
               name="dailyBudget"
-              value={formData.dailyBudget}
+              value={dailyBudgetState}
               onChange={handleChange}
               placeholder="Enter Daily Budget"
             />
