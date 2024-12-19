@@ -91,6 +91,25 @@ const Page = () => {
     });
   };
 
+  const calculateDailyBudget = () => {
+    const { totalBudget, startDate, endDate } = formData;
+    if (totalBudget && startDate && endDate) {
+      const start = new Date(startDate);
+      const end = new Date(endDate);
+      const days = Math.max((end - start) / (1000 * 60 * 60 * 24) + 1, 1); // Ensure at least 1 day
+      const dailyBudget = (parseFloat(totalBudget) / days).toFixed(2);
+      return dailyBudget;
+    }
+    return "";
+  };
+
+  useEffect(() => {
+    const dailyBudget = calculateDailyBudget();
+    setFormData((prevData) => ({ ...prevData, dailyBudget }));
+  }, [formData.totalBudget, formData.startDate, formData.endDate]);
+
+
+
   const selectedNetworkOptions = networkOptions.filter(
     (option) => formData[option.value] === "true"
   );
@@ -567,7 +586,8 @@ const Page = () => {
               name="dailyBudget"
               value={formData.dailyBudget}
               onChange={handleChange}
-              placeholder="Enter Daily Budget"
+              placeholder="Daily Budget will be auto-calculated"
+              readOnly
             />
           </div>
 
