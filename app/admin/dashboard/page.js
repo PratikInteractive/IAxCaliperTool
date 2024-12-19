@@ -8,6 +8,8 @@ import axios from "axios";
 import Link from "next/link";
 import styles from "@/app/styles/dashboad.module.css"
 import { useRouter } from "next/navigation";
+import editIcon from "@/app/assets/edit.svg";
+import Image from "next/image";
 
 export default function Page() {
   const [clients, setClients] = useState([]);
@@ -62,11 +64,16 @@ export default function Page() {
 
   return (
     <div className={`container ${styles.dashboard}`}>
-      <div className={styles.dashboard_block}>
+      <div className={`${styles.dashboard_block}`}>
         <h2>Edit Client</h2>
-        <Link href="/admin/client-creation">
-          <Button className="btn primary">Create Client</Button>
+        <div className={styles.two_buttons}>
+        <Link href="/admin/client-user-creation">
+          <Button className="btn primary">Create User</Button>
         </Link>
+        <Link href="/admin/client-creation">
+          <Button className="btn primary">Client Setup</Button>
+        </Link>
+        </div>
       </div>
       <DataTable
         value={clients}
@@ -90,10 +97,10 @@ export default function Page() {
           body={(rowData) => (
             <div className="action-buttons">
               <button
-                className="btn primary sm"
+                className="btn primary icon"
                 onClick={() => handleEditClient(rowData.clientName)}
               >
-                Edit
+                <Image src={editIcon} width={20} height={20} alt="Edit" />
               </button>
             
             </div>

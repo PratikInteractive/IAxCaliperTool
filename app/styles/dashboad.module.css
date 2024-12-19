@@ -7,3 +7,7 @@
     align-items: center;
     margin-bottom: 2.5rem;
 }
+.two_buttons {
+    display: flex;
+    gap: 20px;
+}
