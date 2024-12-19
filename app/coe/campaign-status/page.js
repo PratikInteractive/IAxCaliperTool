@@ -420,7 +420,7 @@ const Page = () => {
   
     try {
       const response = await axios.post(
-        "http://15.207.141.243:8080/web/pages/caliper/digitalEntrant/caliperSelfServeApi.jsp?action=createNewCampaign",
+        `${apiUrl}caliper/digitalEntrant/caliperSelfServeApi.jsp?action=createNewCampaign`,
         payload
       );
   
