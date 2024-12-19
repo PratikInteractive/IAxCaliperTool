@@ -7,6 +7,8 @@ import { Button } from "primereact/button";
 import axios from "axios";
 import Link from "next/link";
 import styles from "@/app/styles/dashboad.module.css";
+import editIcon from "@/app/assets/edit.svg";
+import Image from "next/image";
 
 export default function Page() {
   const apiUrl = process.env.NEXT_PUBLIC_API_URL;
@@ -86,10 +88,10 @@ export default function Page() {
           body={(rowData) => (
             <div className="action-buttons">
               <button
-                className="btn secondary"
+                className="btn secondary icon"
                 onClick={() => handleEdit(rowData)}
               >
-                Edit
+                <Image src={editIcon} width={20} height={20} alt="Edit" />
               </button>
             </div>
           )}

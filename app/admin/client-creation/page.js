@@ -468,7 +468,7 @@ const Page = () => {
             />
           </div>
           <div className="form_element submit_btn_element">
-            <button type="submit" className="btn p-button p-component">
+            <button type="submit" className="btn">
               Submit
             </button>
           </div>

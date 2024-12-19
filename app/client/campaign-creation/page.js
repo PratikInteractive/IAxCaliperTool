@@ -4,7 +4,9 @@ import React, { useEffect, useRef, useState } from "react";
 import Select from "react-select";
 import axios from "axios";
 import { useRouter } from "next/navigation";
+import closeIcon from "@/app/assets/close.svg";
 import Swal from "sweetalert2";
+import Image from "next/image";
 
 const Page = () => {
   const apiUrl = process.env.NEXT_PUBLIC_API_URL;
@@ -40,6 +42,12 @@ const Page = () => {
     setHeadlines(updatedHeadlines);
   };
 
+  const handleRemoveHeadline = (index) => {
+    const updatedHeadlines = [...headlines];
+    updatedHeadlines.splice(index, 1);
+    setHeadlines(updatedHeadlines);
+  };
+
   const handleDescription = () => {
     setDescriptions([...descriptions, ""]);
   };
@@ -50,6 +58,11 @@ const Page = () => {
     setDescriptions(updatedDescriptions);
   };
 
+  const handleRemoveDescription = (index) => {
+    const updatedDescriptions = [...descriptions];
+    updatedDescriptions.splice(index, 1);
+    setDescriptions(updatedDescriptions);
+  };
 
   useEffect(() => {
     // Get the current date in the format YYYY-MM-DD
@@ -57,7 +70,6 @@ const Page = () => {
     const formattedDate = today.toISOString().split("T")[0]; // e.g., "2024-12-15"
     setCurrentDate(formattedDate);
   }, []);
-
 
   useEffect(() => {
     const fetchUrlDetails = async () => {
@@ -133,8 +145,6 @@ const Page = () => {
     }
   }, [startDate, endDate, campaignBudget]); // Recalculate when these change
 
-
-
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
@@ -142,7 +152,6 @@ const Page = () => {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-
 
     // Validation for dailyBudget
     if (!dailyBudget || dailyBudget <= 0) {
@@ -175,7 +184,6 @@ const Page = () => {
       platform: selectedPlatform?.value,
       clientComment: formData.get("clientComment"),
     };
-
 
     if (headlines.length < 3 || headlines.length > 15) {
       Swal.fire({
@@ -280,11 +288,29 @@ const Page = () => {
           </div>
           <div className="form_element">
             <label>Start Date</label>
-            <input type="date" name="startDate" min={currentDate} onChange={(e) => setStartDate(e.target.value)} required />
+            <input
+              type="date"
+              name="startDate"
+              min={currentDate}
+              onChange={(e) => {
+                const selectedStartDate = e.target.value;
+                setStartDate(selectedStartDate);
+                if (selectedStartDate > endDate) {
+                  setEndDate(""); 
+                }
+              }}
+              required
+            />
           </div>
           <div className="form_element">
             <label>End Date</label>
-            <input type="date" name="endDate" min={currentDate} onChange={(e) => setStartDate(e.target.value)} required />
+            <input
+              type="date"
+              name="endDate"
+              min={startDate || currentDate}
+              onChange={(e) => setStartDate(e.target.value)}
+              required
+            />
           </div>
           <div className="form_element">
             <label>Campaign Budget</label>
@@ -299,7 +325,9 @@ const Page = () => {
           </div>
           <div className="form_element">
             <label>&nbsp;</label>
-            <button className="btn" onClick={calcDailyBudget}>Calculate Daily Budget</button>
+            <button className="btn" onClick={calcDailyBudget}>
+              Calculate Daily Budget
+            </button>
           </div>
           <div className="form_element">
             <label>Daily Budget</label>
@@ -374,6 +402,21 @@ const Page = () => {
                       maxLength={30}
                       required
                     />
+                    {index > 0 && (
+                      <button
+                        type="button"
+                        onClick={() => handleRemoveHeadline(index)}
+                        className="close-btn"
+                        aria-label="Remove headline"
+                      >
+                        <Image
+                          src={closeIcon}
+                          alt="close"
+                          width={20}
+                          height={20}
+                        />
+                      </button>
+                    )}
                   </div>
                 ))}
               </div>
@@ -403,6 +446,21 @@ const Page = () => {
                       maxLength={90}
                       required
                     />
+                    {index > 0 && (
+                      <button
+                        type="button"
+                        onClick={() => handleRemoveDescription(index)}
+                        className="close-btn"
+                        aria-label="Remove headline"
+                      >
+                        <Image
+                          src={closeIcon}
+                          alt="close"
+                          width={20}
+                          height={20}
+                        />
+                      </button>
+                    )}
                   </div>
                 ))}
               </div>
@@ -417,7 +475,7 @@ const Page = () => {
             </div>
           </div>
           <div className="form_element submit_btn_element">
-            <button type="submit" className="btn p-button p-component">
+            <button type="submit" className="btn">
               Proceed to pay
             </button>
           </div>

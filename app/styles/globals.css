@@ -104,25 +104,31 @@ input:focus {
     border-color: #ffcc00;
     color: #fff;
 }
-
+.btn.icon {
+    padding: 5px;
+}
 /* Table */
 table {
-    border: 1px solid #c9c9c9;
-    border-radius: 8px;
-    box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+    border-top: 1px solid #c9c9c9;
+    box-shadow: 0 7px 29px #64646f33;
     margin-bottom: 25px;
+}
+table thead tr:nth-of-type(odd) {
+    background-color: transparent;
 }
 
 table tr,
 table tr th,
 table tr td {
     padding: 15px 10px;
-    border: 1px solid #c9c9c9;
-    border-collapse: separate;
+    border-bottom: 1px solid #c9c9c9;
 }
 
 table .p-column-header-content {
     gap: 10px;
+}
+tr:nth-of-type(odd) {
+    background-color: rgba(0,0,0,.05);
 }
 
 /* Form Elements */
@@ -195,7 +201,19 @@ table .p-column-header-content {
 .multiple_inputs .dynamic_input {
     margin-bottom: 15px;
 }
-
+.multiple_inputs .dynamic_input {
+    position: relative;
+}
+.multiple_inputs .dynamic_input .close-btn {
+    position: absolute;
+    right: -10px;
+    top: -10px;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    border: none;
+    background-color: #d42419;
+}
 /* Actions */
 .action-buttons {
     display: flex;

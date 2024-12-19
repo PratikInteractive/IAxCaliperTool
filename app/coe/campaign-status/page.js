@@ -564,7 +564,17 @@ const Page = () => {
               placeholder="Select Match Type"
             />
           </div>
-
+          <div className="form_element">
+            <label>Network</label>
+            <Select
+              options={networkOptions}
+              isMulti
+              value={selectedNetworkOptions}
+              onChange={handleNetworkChange}
+              placeholder="Select Network"
+              closeMenuOnSelect={false}
+            />
+          </div>
           <div className="form_element">
             <label>Bidding Strategy</label>
             <Select
@@ -617,17 +627,7 @@ const Page = () => {
             </div>
           )}
 
-          <div className="form_element">
-            <label>Network</label>
-            <Select
-              options={networkOptions}
-              isMulti
-              value={selectedNetworkOptions}
-              onChange={handleNetworkChange}
-              placeholder="Select Network"
-              closeMenuOnSelect={false}
-            />
-          </div>
+       
 
           <div className="form_element">
             <label>Industry</label>
@@ -757,7 +757,7 @@ const Page = () => {
           </div>
 
           <div className="form_element submit_btn_element">
-            <button type="submit" className="btn outline p-button p-component">
+            <button type="submit" className="btn outline">
               Submit
             </button>
           </div>
