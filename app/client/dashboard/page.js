@@ -93,37 +93,69 @@ export default function Page() {
   const Reject = async (rowData) => {
     console.log("Reject Clicked");
     console.log("Row Data", rowData.campaignId);
-
-
+  
     const storedUserId = sessionStorage.getItem("user_id");
-    try {
-      const payload = {
-        "loggedInUser": storedUserId,
-        "campaignId": rowData.campaignId
-      };
-
-      const response = await axios.post(
-        `${apiUrl}caliper/digitalEntrant/caliperSelfServeApi.jsp?action=rejectCaliperCampaign`,
-        payload
-      );
-
-      console.log("response", response);
-      if (response.data.result == "success") {
+  
+    // Show SweetAlert to input a comment
+    const { value: comment } = await Swal.fire({
+      title: 'Add a comment',
+      input: 'textarea',
+      inputPlaceholder: 'Enter your comment here...',
+      showCancelButton: true,
+      cancelButtonText: 'Cancel',
+      confirmButtonText: 'Submit',
+      inputValidator: (value) => {
+        if (!value) {
+          return 'You need to write something!';
+        }
+      },
+    });
+  
+    if (comment) {
+      try {
+        const payload = {
+          "loggedInUser": storedUserId,
+          "campaignId": rowData.campaignId,
+          "comment": comment,  // Add the comment here
+        };
+  
+        const response = await axios.post(
+          `${apiUrl}caliper/digitalEntrant/caliperSelfServeApi.jsp?action=rejectCaliperCampaign`,
+          payload
+        );
+  
+        console.log("response", response);
+        if (response.data.result === "success") {
+          Swal.fire({
+            title: "Success!",
+            text: "Campaign Rejected Successfully!",
+            icon: "success",
+            confirmButtonText: "OK",
+          }).then((result) => {
+            if (result.isConfirmed) {
+              window.location.href = "/client/dashboard";
+            }
+          });
+        } else {
+          Swal.fire({
+            title: "Error",
+            text: "There was an issue rejecting the campaign.",
+            icon: "error",
+            confirmButtonText: "OK",
+          });
+        }
+      } catch (error) {
+        console.error("Error rejecting campaign:", error);
         Swal.fire({
-          title: "Success!",
-          text: "Campaign Reject Successfully!!",
-          icon: "success",
+          title: "Error",
+          text: "There was an issue processing your request.",
+          icon: "error",
           confirmButtonText: "OK",
-        }).then((result) => {
-          if (result.isConfirmed) {
-            window.location.href = "/client/dashboard";
-          }
         });
       }
-    } catch (error) {
-      console.error("Error fetching campaigns:", error);
     }
-  }
+  };
+  
 
   const Pause = async (rowData) => {
     console.log("Pause Clicked");
@@ -220,8 +252,9 @@ export default function Page() {
         <Column field="campaignName" header="Campaign Name" sortable />
         <Column field="startDate" header="Start Date" />
         <Column field="endDate" header="End Date" />
-        <Column field="dailyBudget" header="Total Budget" sortable />
+        <Column field="totalBudget" header="Total Budget" sortable />
         <Column field="status" header="Status" />
+        <Column field="comment" header="Rejection Comment" />
         {/* <Column
           header="Approval"
           body={(rowData) => (

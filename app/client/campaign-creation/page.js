@@ -166,7 +166,7 @@ const Page = () => {
       campaignName: formData.get("CampaignName"),
       startDate: formData.get("startDate"),
       endDate: formData.get("endDate"),
-      campaignBudget: formData.get("CampaignBudget"),
+      totalBudget: formData.get("CampaignBudget"),
       dailyBudget,
       landingPageUrl: formData.get("landingUrl"),
       youtubeUrl: "",
