@@ -37,7 +37,7 @@ const Page = () => {
   });
 
   const [locationOptions, setLocationOptions] = useState([]);
-  const [dailyBudgetState, setDailyBudget] = useState(""); 
+  const [dailyBudgetState, setDailyBudget] = useState("");
 
 
   const platformOptions = [
@@ -106,30 +106,30 @@ const Page = () => {
         const savedCampaign = sessionStorage.getItem("selectedCampaign");
         console.log("savedCampaign", savedCampaign);
         const userId = sessionStorage.getItem("user_id");
-  
+
         if (savedCampaign && userId) {
           const parsedCampaign = JSON.parse(savedCampaign);
-  
+
           const requestBody = {
             loggedInUser: userId,
             campaignName: parsedCampaign.campaignName,
             campaignId: parsedCampaign.campaignId,
             clientName: parsedCampaign.clientName,
           };
-  
+
           const response = await axios.post(
             `${apiUrl}caliper/digitalEntrant/caliperSelfServeApi.jsp?action=viewCampaignSetupDetails`,
             requestBody
           );
-  
+
           if (response.data?.result === "success") {
             console.log("API Response:", response.data);
             const campaignData = response.data;
             const formattedStartDate = formatDate(campaignData.startDate);
             const formattedEndDate = formatDate(campaignData.endDate);
-  
+
             console.log("totalBudget", campaignData.totalBudget);
-  
+
             setFormData({
               clientName: campaignData.clientName || "",
               campaignName: campaignData.campaignName || "",
@@ -170,7 +170,7 @@ const Page = () => {
               objective: "sales",
               biddingValue: "",
             });
-  
+
             const locationData = campaignData.caliperClientDataSetup;
             setLocationOptions([
               { value: locationData.city, label: `City - ${locationData.city}` },
@@ -179,12 +179,12 @@ const Page = () => {
                 label: `State - ${locationData.state}`,
               },
               {
-                value: `${locationData.latitude}/${locationData.longitude}`,
-                label: `Latitude/Longitude - ${locationData.latitude}/${locationData.longitude}`,
-              },
-              {
-                value: `${locationData.radius} ${locationData.radiusUnit}`,
-                label: `Radius - ${locationData.radius} ${locationData.radiusUnit}`,
+                value: `${locationData.latitude}/${locationData.longitude}/${locationData.radius}`,
+                label: `Lat/Long+Radius - ${locationData.latitude}/${locationData.longitude}(${locationData.radius} ${locationData.radiusUnit})`,
+                latitude: locationData.latitude,
+                longitude: locationData.longitude,
+                radius: locationData.radius,
+                radiusUnit: locationData.radiusUnit,
               },
               {
                 value: locationData.pincode,
@@ -198,10 +198,10 @@ const Page = () => {
         alert("Error fetching campaign details.");
       }
     };
-  
+
     fetchCampaignDetails();
   }, []);
-  
+
 
   const formatDate = (dateString) => {
     const date = new Date(dateString);
@@ -233,9 +233,22 @@ const Page = () => {
     };
 
     if (selectedOption.value.includes("/")) {
-      const [latitude, longitude] = selectedOption.value.split("/");
-      updatedLocation.latitude = latitude;
-      updatedLocation.longitude = longitude;
+      const parts = selectedOption.value.split("/");
+      if (parts.length === 3) {
+        const [latitude, longitude, radius] = parts;
+        updatedLocation.latitude = latitude;
+        updatedLocation.longitude = longitude;
+
+        const match = selectedOption.label.match(/\(([\d.]+)\s(\w+)\)/);
+        if (match) {
+          updatedLocation.radius = radius || match[1];
+          updatedLocation.radiusUnit = match[2];
+        }
+      } else {
+        const [latitude, longitude] = parts;
+        updatedLocation.latitude = latitude;
+        updatedLocation.longitude = longitude;
+      }
     } else if (selectedOption.value.includes(" ")) {
       const [radius, radiusUnit] = selectedOption.value.split(" ");
       updatedLocation.radius = radius;
@@ -247,6 +260,7 @@ const Page = () => {
     } else if (selectedOption.label.startsWith("Pincode")) {
       updatedLocation.pincode = selectedOption.value;
     }
+
     setFormData({
       ...formData,
       ...updatedLocation,
@@ -339,13 +353,13 @@ const Page = () => {
   };
 
   useEffect(() => {
-   calculateDailyBudget();
+    calculateDailyBudget();
   }, [formData.totalBudget, formData.campaignStartDate, formData.campaignEndDate]);
 
 
-  const handleSubmit = async (e) => { 
+  const handleSubmit = async (e) => {
     e.preventDefault();
-  
+
     const {
       loggedInUser = sessionStorage.getItem("user_id"),
       campaignId = JSON.parse(sessionStorage.getItem("selectedCampaign"))?.campaignId,
@@ -376,7 +390,7 @@ const Page = () => {
       matchType,
       dailyBudget = dailyBudgetState,
     } = formData;
-  
+
     const payload = {
       loggedInUser,
       campaignId,
@@ -407,27 +421,49 @@ const Page = () => {
       matchType,
       dailyBudget,
     };
-  
+
+
+    if (headlines.length < 3 || headlines.length > 15) {
+      Swal.fire({
+        title: "Validation Error",
+        text: "Please add between 3 and 15 headlines.",
+        icon: "warning",
+        confirmButtonText: "OK",
+      });
+      return;
+    }
+
+    if (descriptions.length < 2 || descriptions.length > 4) {
+      Swal.fire({
+        title: "Validation Error",
+        text: "Please add between 2 and 4 descriptions.",
+        icon: "warning",
+        confirmButtonText: "OK",
+      });
+      return;
+    }
+
+
     const preparedPayload = preparePayload();
     console.log("Prepared Payload:", preparedPayload);
-  
+
     setFormData({
       ...formData,
       biddingValue: "",
     });
-  
+
     console.log("Form Data Submitted:", payload);
-  
+
     try {
       const response = await axios.post(
         `${apiUrl}caliper/digitalEntrant/caliperSelfServeApi.jsp?action=createNewCampaign`,
         payload
       );
-  
+
       if (response.status === 200 && response.data) {
         const data = response.data;
         console.log("API Response:", data);
-  
+
         if (data.result === "success") {
           Swal.fire({
             title: "Success!",
@@ -464,7 +500,7 @@ const Page = () => {
       });
     }
   };
-  
+
 
   return (
     <div className="container mt-2">
@@ -605,29 +641,29 @@ const Page = () => {
 
           {(formData.biddingStrategy === "Maximize Clicks" ||
             formData.biddingStrategy === "Target Impression Share") && (
-            <div className="form_element">
-              <label>Number (Maximize Clicks / Target Impression Share)</label>
-              <input
-                type="number"
-                value={
-                  formData.biddingStrategy === "Maximize Clicks"
-                    ? formData.biddingValue
-                    : formData.biddingValue
-                }
-                onChange={(e) =>
-                  handleNumberChange(
-                    e,
+              <div className="form_element">
+                <label>Number (Maximize Clicks / Target Impression Share)</label>
+                <input
+                  type="number"
+                  value={
                     formData.biddingStrategy === "Maximize Clicks"
-                      ? "maximizeClicksNumber"
-                      : "targetImpressionShareNumber"
-                  )
-                }
-                placeholder="Enter Number"
-              />
-            </div>
-          )}
+                      ? formData.biddingValue
+                      : formData.biddingValue
+                  }
+                  onChange={(e) =>
+                    handleNumberChange(
+                      e,
+                      formData.biddingStrategy === "Maximize Clicks"
+                        ? "maximizeClicksNumber"
+                        : "targetImpressionShareNumber"
+                    )
+                  }
+                  placeholder="Enter Number"
+                />
+              </div>
+            )}
 
-       
+
 
           <div className="form_element">
             <label>Industry</label>
