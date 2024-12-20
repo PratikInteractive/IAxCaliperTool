@@ -48,11 +48,11 @@ const Page = () => {
   const [selectedPlatform, setSelectedPlatform] = useState(platformOptions[0]);
 
   const biddingStrategyOptions = [
-    { value: "Manual CPC", label: "Manual CPC" },
-    { value: "Maximize Clicks", label: "Maximize Clicks" },
-    { value: "Maximize Conversions", label: "Maximize Conversions" },
-    { value: "Maximize Conversion Value", label: "Maximize Conversion Value" },
-    { value: "Target Impression Share", label: "Target Impression Share" },
+    { value: "manual_cpc", label: "Manual CPC" },
+    { value: "maximize_clicks", label: "Maximize Clicks" },
+    { value: "maximize_conversions", label: "Maximize Conversions" },
+    { value: "maximize_conversion_value", label: "Maximize Conversion Value" },
+    { value: "target_impression_share", label: "Target Impression Share" },
   ];
 
   const manualCpcOptions = [
@@ -307,14 +307,14 @@ const Page = () => {
   const preparePayload = () => {
     let finalBiddingStrategy = formData.biddingStrategy;
 
-    if (formData.biddingStrategy === "Manual CPC") {
-      finalBiddingStrategy = `Manual CPC`;
+    if (formData.biddingStrategy === "manual_cpc") {
+      finalBiddingStrategy = `manual_cpc`;
     }
-    if (formData.biddingStrategy === "Maximize Clicks") {
-      finalBiddingStrategy = `Maximize Clicks`;
+    if (formData.biddingStrategy === "maximize_clicks") {
+      finalBiddingStrategy = `maximize_clicks`;
     }
-    if (formData.biddingStrategy === "Target Impression Share") {
-      finalBiddingStrategy = `Target Impression Share`;
+    if (formData.biddingStrategy === "target_impression_share") {
+      finalBiddingStrategy = `target_impression_share`;
     }
 
     const { headlinesOptions, descriptionsOptions, keywordsOptions, ...rest } =
@@ -598,6 +598,7 @@ const Page = () => {
                 setFormData({ ...formData, matchType: selectedOption.value })
               }
               placeholder="Select Match Type"
+              required
             />
           </div>
           <div className="form_element">
@@ -609,6 +610,7 @@ const Page = () => {
               onChange={handleNetworkChange}
               placeholder="Select Network"
               closeMenuOnSelect={false}
+              required
             />
           </div>
           <div className="form_element">
@@ -621,12 +623,13 @@ const Page = () => {
               onChange={handleSelectChange}
               placeholder="Select Bidding Strategy"
               isSearchable={false}
+              required
             />
           </div>
 
-          {formData.biddingStrategy === "Manual CPC" && (
+          {formData.biddingStrategy === "manual_cpc" && (
             <div className="form_element">
-              <label>True/False (Manual CPC)</label>
+              <label>Enhanced CPC (True/False) </label>
               <Select
                 options={manualCpcOptions}
                 value={manualCpcOptions.find(
@@ -635,34 +638,39 @@ const Page = () => {
                 )}
                 onChange={handleManualCpcChange}
                 placeholder="Select True or False"
+                required
               />
             </div>
           )}
 
-          {(formData.biddingStrategy === "Maximize Clicks" ||
-            formData.biddingStrategy === "Target Impression Share") && (
-              <div className="form_element">
-                <label>Number (Maximize Clicks / Target Impression Share)</label>
-                <input
-                  type="number"
-                  value={
-                    formData.biddingStrategy === "Maximize Clicks"
-                      ? formData.biddingValue
-                      : formData.biddingValue
-                  }
-                  onChange={(e) =>
-                    handleNumberChange(
-                      e,
-                      formData.biddingStrategy === "Maximize Clicks"
-                        ? "maximizeClicksNumber"
-                        : "targetImpressionShareNumber"
-                    )
-                  }
-                  placeholder="Enter Number"
-                />
-              </div>
-            )}
-
+          {(formData.biddingStrategy === "maximize_clicks" ||
+            formData.biddingStrategy === "target_impression_share") && (
+            <div className="form_element">
+              <label>
+              {formData.biddingStrategy === "maximize_clicks" 
+        ? "Max CPC Bid Limit" 
+        : "Target Impression Share"}
+              </label>
+              <input
+                type="number"
+                value={
+                  formData.biddingStrategy === "maximize_clicks"
+                    ? formData.biddingValue
+                    : formData.biddingValue
+                }
+                onChange={(e) =>
+                  handleNumberChange(
+                    e,
+                    formData.biddingStrategy === "maximize_clicks"
+                      ? "maximizeClicksNumber"
+                      : "targetImpressionShareNumber"
+                  )
+                }
+                placeholder="Enter Number"
+                required
+              />
+            </div>
+          )}
 
 
           <div className="form_element">
@@ -696,6 +704,7 @@ const Page = () => {
               onChange={handleLocationChange}
               placeholder="Select Ads Location"
               isSearchable={false}
+              required
             />
           </div>
 
@@ -707,6 +716,7 @@ const Page = () => {
               value={formData.adName}
               onChange={handleChange}
               placeholder="Enter Ad Name"
+              required
             />
           </div>
 
@@ -767,6 +777,7 @@ const Page = () => {
                 });
               }}
               placeholder="Select Keywords"
+              required
             />
           </div>
 
@@ -778,6 +789,7 @@ const Page = () => {
               value={formData.headlines}
               onChange={handleHeadlinesChange}
               placeholder="Select Headlines"
+              required
             />
           </div>
 
@@ -789,6 +801,7 @@ const Page = () => {
               value={formData.descriptions}
               onChange={handleDescriptionsChange}
               placeholder="Select Descriptions"
+              required
             />
           </div>
 
