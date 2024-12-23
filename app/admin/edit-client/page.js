@@ -8,6 +8,17 @@ import Select from "react-select";
 import Swal from "sweetalert2";
 
 export default function EditClientPage() {
+
+  const role = localStorage.getItem('role');
+  console.log("Client Dashboard Role", role);
+  if(role !== "admin") {
+    sessionStorage.removeItem("user_id");
+    sessionStorage.removeItem("role");
+    localStorage.removeItem("role");
+    window.location.href = "/unauthorized";
+  }
+
+
   const [clientData, setClientData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [formValues, setFormValues] = useState({});
