@@ -39,13 +39,16 @@ const page = () => {
           const user_role = result.value;
           if (user_role.includes("caliper_admin")) {
             sessionStorage.setItem("role", "admin");
+            localStorage.setItem("role", "admin");
             document.cookie = "role=admin"
             router.push("/admin/dashboard/");
           } else if (user_role === "caliper_client") {
             sessionStorage.setItem("role", "client");
+            localStorage.setItem("role", "client");
             router.push("/client/dashboard/");
           } else if (user_role === "caliper_hub_user") {
             sessionStorage.setItem("role", "coe");
+            localStorage.setItem("role", "coe");
             router.push("/coe/dashboard/");
           } else {
             setIsLoading(false);
@@ -99,7 +102,7 @@ const page = () => {
             )}
             <div className={styles.form_element}>
               <button type="submit" className="btn primary" disabled={isLoading}>
-                {isLoading ? "Loading..." : "Submit"}
+                {isLoading ? <div className="loader"></div> : "Submit"}
               </button>
             </div>
           </form>
