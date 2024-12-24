@@ -17,6 +17,7 @@
     display: block;
     width: 140px;
     text-align: center;
+    border-radius: 8px;
 }
 .menu p {
     position: relative;
@@ -36,4 +37,11 @@
 }
 .menu p.toggled::after {
     transform: rotate(135deg);
+}
+
+@media screen and (max-width: 1440px) {
+    .logo_img {
+        max-width: 160px;
+        height: auto;
+    }
 }

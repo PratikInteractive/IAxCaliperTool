@@ -104,15 +104,18 @@ input:focus {
     border-color: #ffcc00;
     color: #fff;
 }
+
 .btn.icon {
     padding: 5px;
 }
+
 /* Table */
 table {
     border-top: 1px solid #c9c9c9;
     box-shadow: 0 7px 29px #64646f33;
     margin-bottom: 25px;
 }
+
 table thead tr:nth-of-type(odd) {
     background-color: transparent;
 }
@@ -127,8 +130,9 @@ table tr td {
 table .p-column-header-content {
     gap: 10px;
 }
+
 tr:nth-of-type(odd) {
-    background-color: rgba(0,0,0,.05);
+    background-color: rgba(0, 0, 0, .05);
 }
 
 /* Form Elements */
@@ -201,9 +205,11 @@ tr:nth-of-type(odd) {
 .multiple_inputs .dynamic_input {
     margin-bottom: 15px;
 }
+
 .multiple_inputs .dynamic_input {
     position: relative;
 }
+
 .multiple_inputs .dynamic_input .close-btn {
     position: absolute;
     right: -10px;
@@ -214,6 +220,7 @@ tr:nth-of-type(odd) {
     border: none;
     background-color: #d42419;
 }
+
 /* Actions */
 .action-buttons {
     display: flex;
@@ -258,16 +265,22 @@ tr:nth-of-type(odd) {
     border-top: 3px solid var(--secondaryColor);
     border-radius: 50%;
     animation: spin 3s linear infinite;
-  }
+}
 
-  @keyframes spin {
+/* Swal Alert */
+.swal2-confirm.swal2-styled {
+    background-color: rgb(110, 133, 177);
+}
+
+@keyframes spin {
     0% {
-      transform: rotate(0deg);
+        transform: rotate(0deg);
     }
+
     100% {
-      transform: rotate(360deg);
+        transform: rotate(360deg);
     }
-  }
+}
 
 @media screen and (max-width: 1440px) {
     html {
