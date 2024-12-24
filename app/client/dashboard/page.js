@@ -262,46 +262,6 @@ export default function Page() {
                   )}
         />
         <Column field="comment" header="Rejection Comment" />
-        {/* <Column
-          header="Approval"
-          body={(rowData) => (
-            <div className="action-buttons">
-              {!isDrafted(rowData.status) && (
-                <button className="btn success" onClick={() => Approval(rowData)}>
-                  Approve
-                </button>
-              )}
-            </div>
-          )}
-          bodyClassName="text-center"
-        />
-        <Column
-          header="Reject"
-          body={(rowData) => (
-            <div className="action-buttons">
-               {!isDrafted(rowData.status) && (
-                <button className="btn reject" onClick={() => Reject(rowData)}>
-                  Approve
-                </button>
-              )}
-
-            </div>
-          )}
-          bodyClassName="text-center"
-        />
-        <Column
-          header="Pause"
-          body={(rowData) => (
-            <div className="action-buttons">
-              {!isDrafted(rowData.status) && (
-                <button className="btn pause" onClick={() => Pause(rowData)}>
-                  Approve
-                </button>
-              )}
-            </div>
-          )}
-          bodyClassName="text-center"
-        /> */}
          <Column
           header="Actions"
           body={(rowData) => (

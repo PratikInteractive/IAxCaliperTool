@@ -10,6 +10,7 @@ const Header = () => {
   const [showLogout, setShowLogout] = useState(false);
   const [userName, setUserName] = useState(null); 
   const currentPath = usePathname(); 
+  const [is404, setIs404] = useState(false);
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -23,7 +24,16 @@ const Header = () => {
     }
   }, []);
 
-  if (currentPath === "/login" || currentPath === "/unauthorized") {
+  useEffect(() => {
+    if (document.title === '404') {
+      setIs404(true);
+    } else {
+      setIs404(false);
+    }
+  }, [currentPath]);
+
+
+  if (currentPath === "/login" || currentPath === "/unauthorized" || is404) {
     return null;
   }
 
@@ -51,7 +61,7 @@ const Header = () => {
       <header className={styles.header}>
         <div className={`container ${styles.header_container}`}>
           <div className="logo">
-            <Image src={logo} width={200} height={80} alt="logo" />
+            <Image src={logo} width={200} height={80} alt="logo" className={styles.logo_img} />
           </div>
           <div className={styles.menu}>
             <p onClick={toggleLogout} className={showLogout ? `${styles.toggled}` : ''}>
