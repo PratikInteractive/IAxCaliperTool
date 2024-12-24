@@ -75,9 +75,8 @@ const Page = () => {
   };
 
   useEffect(() => {
-    // Get the current date in the format YYYY-MM-DD
     const today = new Date();
-    const formattedDate = today.toISOString().split("T")[0]; // e.g., "2024-12-15"
+    const formattedDate = today.toISOString().split("T")[0];
     setCurrentDate(formattedDate);
   }, []);
 
@@ -103,20 +102,17 @@ const Page = () => {
             landingUrl: response.data.landingPageUrl || "",
             youtubeUrl: response.data.youtubeVideoUrl || "",
           });
-          console.log("Fetched URL details:", response.data);
         } else {
           console.error("Error:", response.data.message);
         }
       } catch (error) {
         console.error("Error fetching URL details:", error.message);
-      } finally {
       }
     };
 
     fetchUrlDetails();
   }, []);
 
-  // Calculation of Daily Budget
   const calcDailyBudget = (e) => {
     e.preventDefault();
     const startDate = formRef.current.elements["startDate"].value;
@@ -143,10 +139,10 @@ const Page = () => {
     if (startDate && endDate && campaignBudget > 0) {
       const start = new Date(startDate);
       const end = new Date(endDate);
-      const days = (end - start) / (1000 * 60 * 60 * 24) + 1; // Include end date
+      const days = (end - start) / (1000 * 60 * 60 * 24) + 1;
       if (days > 0) {
         const calculatedBudget = campaignBudget / days;
-        setDailyBudget(Math.max(calculatedBudget, 0).toFixed(2)); // Ensure non-negative daily budget
+        setDailyBudget(Math.max(calculatedBudget, 0).toFixed(2));
       } else {
         setDailyBudget(0);
       }
@@ -164,7 +160,6 @@ const Page = () => {
   const handleSubmit = async (event) => {
     event.preventDefault();
 
-    // Validation for dailyBudget
     if (!dailyBudget || dailyBudget <= 0) {
       Swal.fire({
         title: "Validation Error",
@@ -196,6 +191,30 @@ const Page = () => {
       clientComment: formData.get("clientComment"),
     };
 
+
+    const headlineSet = new Set(headlines.map((item) => item.toLowerCase()));
+    if (headlineSet.size !== headlines.length) {
+      Swal.fire({
+        title: "Validation Error",
+        text: "Headlines must be unique. Please review your inputs.",
+        icon: "warning",
+        confirmButtonText: "OK",
+      });
+      return;
+    }
+  
+    const descriptionSet = new Set(descriptions.map((item) => item.toLowerCase()));
+    if (descriptionSet.size !== descriptions.length) {
+      Swal.fire({
+        title: "Validation Error",
+        text: "Descriptions must be unique. Please review your inputs.",
+        icon: "warning",
+        confirmButtonText: "OK",
+      });
+      return;
+    }
+
+
     if (headlines.length < 3 || headlines.length > 15) {
       Swal.fire({
         title: "Validation Error",
@@ -216,8 +235,6 @@ const Page = () => {
       return;
     }
 
-    console.log("Payload Entry", payload);
-
     try {
       const response = await fetch(
         `${apiUrl}caliper/digitalEntrant/caliperSelfServeApi.jsp?action=createClientCampaign`,
@@ -232,34 +249,23 @@ const Page = () => {
 
       if (response.ok) {
         const data = await response.json();
-        console.log("Response received:", data);
-        // alert("Form submitted successfully!");
-        // router.push("/client/dashboard");
-
         if (data.result == "success") {
-          console.log("Report", data.result);
-          // Start
           Swal.fire({
             title: "Success!",
             text: "Campaign Created Successfully!",
             icon: "success",
             confirmButtonText: "OK",
-          }).then((result) => {
-            if (result.isConfirmed) {
-              window.location.href = "/client/dashboard";
-            }
+          }).then(() => {
+            window.location.href = "/client/dashboard";
           });
-          // End
         } else {
           Swal.fire({
             title: "Error!",
-            text: response.data.message,
+            text: data.message,
             icon: "warning",
             confirmButtonText: "OK",
-          }).then((result) => {
-            if (result.isConfirmed) {
-              window.location.href = "/client/campaign-creation";
-            }
+          }).then(() => {
+            window.location.href = "/client/campaign-creation";
           });
         }
       } else {
