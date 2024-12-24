@@ -9,6 +9,16 @@ import Swal from "sweetalert2";
 import Image from "next/image";
 
 const Page = () => {
+
+  const role = localStorage.getItem('role');
+  console.log("Client Dashboard Role", role);
+  if(role !== "client") {
+    sessionStorage.removeItem("user_id");
+    sessionStorage.removeItem("role");
+    localStorage.removeItem("role");
+    window.location.href = "/unauthorized";
+  }
+
   const apiUrl = process.env.NEXT_PUBLIC_API_URL;
   const router = useRouter();
   const formRef = useRef(null);
@@ -140,6 +150,7 @@ const Page = () => {
       setDailyBudget(0);
     }
   }, [startDate, endDate, campaignBudget]);
+  
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -314,7 +325,7 @@ const Page = () => {
               type="date"
               name="endDate"
               min={startDate || currentDate}
-              onChange={(e) => setStartDate(e.target.value)}
+              onChange={(e) => setEndDate(e.target.value)}
               required
             />
           </div>
@@ -329,12 +340,12 @@ const Page = () => {
               onChange={(e) => setCampaignBudget(Number(e.target.value))}
             />
           </div>
-          <div className="form_element">
+          {/* <div className="form_element">
             <label>&nbsp;</label>
             <button className="btn" onClick={calcDailyBudget}>
               Calculate Daily Budget
             </button>
-          </div>
+          </div> */}
           <div className="form_element">
             <label>Daily Budget</label>
             <input
