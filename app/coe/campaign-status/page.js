@@ -7,15 +7,6 @@ import Swal from "sweetalert2";
 
 const Page = () => {
 
-  const role = localStorage.getItem('role');
-  console.log("Client Dashboard Role", role);
-  if(role !== "coe") {
-    sessionStorage.removeItem("user_id");
-    sessionStorage.removeItem("role");
-    localStorage.removeItem("role");
-    window.location.href = "/unauthorized";
-  }
-
   const apiUrl = process.env.NEXT_PUBLIC_API_URL;
   const [formData, setFormData] = useState({
     clientName: "",
@@ -301,18 +292,33 @@ const Page = () => {
   };
 
   const handleHeadlinesChange = (selectedOptions) => {
-    setFormData({
-      ...formData,
-      headlines: selectedOptions,
-    });
+    if (selectedOptions.some(option => option.value === "select_all")) {
+      setFormData({
+        ...formData,
+        headlines: formData.headlinesOptions || [],
+      });
+    } else {
+      setFormData({
+        ...formData,
+        headlines: selectedOptions,
+      });
+    }
   };
 
   const handleDescriptionsChange = (selectedOptions) => {
-    setFormData({
-      ...formData,
-      descriptions: selectedOptions,
-    });
+    if (selectedOptions.some(option => option.value === "select_all")) {
+      setFormData({
+        ...formData,
+        descriptions: formData.descriptionsOptions || [], 
+      });
+    } else {
+      setFormData({
+        ...formData,
+        descriptions: selectedOptions,
+      });
+    }
   };
+
 
   const preparePayload = () => {
     let finalBiddingStrategy = formData.biddingStrategy;
@@ -655,32 +661,32 @@ const Page = () => {
 
           {(formData.biddingStrategy === "maximize_clicks" ||
             formData.biddingStrategy === "target_impression_share") && (
-            <div className="form_element">
-              <label>
-              {formData.biddingStrategy === "maximize_clicks" 
-        ? "Max CPC Bid Limit" 
-        : "Target Impression Share"}
-              </label>
-              <input
-                type="number"
-                value={
-                  formData.biddingStrategy === "maximize_clicks"
-                    ? formData.biddingValue
-                    : formData.biddingValue
-                }
-                onChange={(e) =>
-                  handleNumberChange(
-                    e,
+              <div className="form_element">
+                <label>
+                  {formData.biddingStrategy === "maximize_clicks"
+                    ? "Max CPC Bid Limit"
+                    : "Target Impression Share"}
+                </label>
+                <input
+                  type="number"
+                  value={
                     formData.biddingStrategy === "maximize_clicks"
-                      ? "maximizeClicksNumber"
-                      : "targetImpressionShareNumber"
-                  )
-                }
-                placeholder="Enter Number"
-                required
-              />
-            </div>
-          )}
+                      ? formData.biddingValue
+                      : formData.biddingValue
+                  }
+                  onChange={(e) =>
+                    handleNumberChange(
+                      e,
+                      formData.biddingStrategy === "maximize_clicks"
+                        ? "maximizeClicksNumber"
+                        : "targetImpressionShareNumber"
+                    )
+                  }
+                  placeholder="Enter Number"
+                  required
+                />
+              </div>
+            )}
 
 
           <div className="form_element">
@@ -794,7 +800,10 @@ const Page = () => {
           <div className="form_element">
             <label>Headlines</label>
             <Select
-              options={formData.headlinesOptions}
+              options={[
+                { value: "select_all", label: "Select All" },
+                ...(formData.headlinesOptions || []),
+              ]}
               isMulti
               value={formData.headlines}
               onChange={handleHeadlinesChange}
@@ -806,7 +815,10 @@ const Page = () => {
           <div className="form_element">
             <label>Descriptions</label>
             <Select
-              options={formData.descriptionsOptions}
+              options={[
+                { value: "select_all", label: "Select All" },
+                ...(formData.descriptionsOptions || []), 
+              ]}
               isMulti
               value={formData.descriptions}
               onChange={handleDescriptionsChange}

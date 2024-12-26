@@ -12,14 +12,14 @@ import Image from "next/image";
 
 export default function Page() {
 
-  const role = localStorage.getItem('role');
-  console.log("Client Dashboard Role", role);
-  if(role !== "coe") {
-    sessionStorage.removeItem("user_id");
-    sessionStorage.removeItem("role");
-    localStorage.removeItem("role");
-    window.location.href = "/unauthorized";
-  }
+  // const role = localStorage.getItem('role');
+  // console.log("Client Dashboard Role", role);
+  // if(role !== "coe") {
+  //   sessionStorage.removeItem("user_id");
+  //   sessionStorage.removeItem("role");
+  //   localStorage.removeItem("role");
+  //   window.location.href = "/unauthorized";
+  // }
 
 
   const apiUrl = process.env.NEXT_PUBLIC_API_URL;
