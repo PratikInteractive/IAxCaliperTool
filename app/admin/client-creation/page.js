@@ -7,14 +7,6 @@ import Swal from 'sweetalert2';
 
 const Page = () => {
 
-  const role = localStorage.getItem('role');
-  console.log("Client Dashboard Role", role);
-  if(role !== "admin") {
-    sessionStorage.removeItem("user_id");
-    sessionStorage.removeItem("role");
-    localStorage.removeItem("role");
-    window.location.href = "/unauthorized";
-  }
 
   const apiUrl = process.env.NEXT_PUBLIC_API_URL;
   const formRef = useRef(null);
@@ -394,6 +386,9 @@ const Page = () => {
               <span className="error-message">{pincodeError}</span>
             )}
           </div>
+          <div className="form_element fw-100 mb-0">
+            <h6>Client Data Setup</h6>
+          </div>
           <div className="form_element">
             <label>Client Location Exclusion (optional)</label>
             <input
@@ -419,7 +414,7 @@ const Page = () => {
           </div>
           <div className="form_element">
             <label>Landing Page URL</label>
-            <input type="text" name="landingPageUrl" placeholder="Landing Page URL (required)" required />
+            <input type="text" name="landingPageUrl" placeholder="Landing Page URL (required format https://)" pattern="https://.*" required />
           </div>
           {/* <div className="form_element">
             <label>YouTube URL</label>

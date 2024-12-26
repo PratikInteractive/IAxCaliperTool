@@ -39,7 +39,28 @@ h3,
     font-weight: 700;
 }
 
+h4,
+.h4 {
+    font-size: 1.5rem;
+    font-weight: 700;
+}
+
+h5,
+.h5 {
+    font-size: 1.25rem;
+    font-weight: 700;
+}
+
+h6,
+.h6 {
+    font-size: 1.125rem;
+    font-weight: 700;
+}
+
 /* Margins */
+.mb-0 {
+    margin-bottom: 0rem !important;
+}
 .mb-2 {
     margin-bottom: 2rem;
 }
@@ -153,7 +174,9 @@ tr:nth-of-type(odd) {
 .form_elements .submit_btn_element {
     grid-column: 1 / -1;
 }
-
+.form_elements .fw-100{
+    grid-column: 1 / -1;
+}
 .form_element label {
     font-size: 1.125rem;
 }
@@ -215,10 +238,15 @@ tr:nth-of-type(odd) {
     right: -10px;
     top: -10px;
     border-radius: 50%;
-    width: 30px;
-    height: 30px;
+    width: 20px;
+    height: 20px;
     border: none;
     background-color: #d42419;
+    cursor: pointer;
+}
+.multiple_inputs .dynamic_input .close-btn img {
+    width: 14px;
+    height: 14px;
 }
 
 /* Actions */

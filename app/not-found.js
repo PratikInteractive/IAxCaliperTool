@@ -6,7 +6,6 @@ import Image from 'next/image';
 
 const page = () => {
 
-
     const logout = () => {
         sessionStorage.removeItem("user_id");
         sessionStorage.removeItem("role");
@@ -23,7 +22,6 @@ const page = () => {
                     <Image src={logo} width={250} height={120} alt="logo" />
                     <p>404! Page Not Found</p>
                     <div className={styles.btn_wrap}>
-
                         <button onClick={logout} className='btn'>Please Login</button>
                     </div>
                 </div>

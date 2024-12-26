@@ -10,15 +10,6 @@ import Image from "next/image";
 
 const Page = () => {
 
-  const role = localStorage.getItem('role');
-  console.log("Client Dashboard Role", role);
-  if(role !== "client") {
-    sessionStorage.removeItem("user_id");
-    sessionStorage.removeItem("role");
-    localStorage.removeItem("role");
-    window.location.href = "/unauthorized";
-  }
-
   const apiUrl = process.env.NEXT_PUBLIC_API_URL;
   const router = useRouter();
   const formRef = useRef(null);
@@ -160,10 +151,10 @@ const Page = () => {
   const handleSubmit = async (event) => {
     event.preventDefault();
 
-    if (!dailyBudget || dailyBudget <= 0) {
+    if (dailyBudget <= 100) {
       Swal.fire({
-        title: "Validation Error",
-        text: "Please calculate the daily budget before proceeding.",
+        title: "Error!",
+        text: "Daily Budget should be greater then 100",
         icon: "warning",
         confirmButtonText: "OK",
       });
