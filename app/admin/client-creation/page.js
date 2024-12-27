@@ -387,7 +387,7 @@ const Page = () => {
             )}
           </div>
           <div className="form_element fw-100 mb-0">
-            <h6>Client Data Setup</h6>
+            <h6>Client Campaign Details</h6>
           </div>
           <div className="form_element">
             <label>Client Location Exclusion (optional)</label>
@@ -413,8 +413,8 @@ const Page = () => {
             )}
           </div>
           <div className="form_element">
-            <label>Landing Page URL</label>
-            <input type="text" name="landingPageUrl" placeholder="Landing Page URL (required format https://)" pattern="https://.*" required />
+            <label>Landing Page URL ( http / https )</label>
+            <input type="text" name="landingPageUrl" placeholder="Landing Page URL (required)" pattern="https?://.*" required />
           </div>
           {/* <div className="form_element">
             <label>YouTube URL</label>

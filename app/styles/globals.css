@@ -74,7 +74,7 @@ h6,
     margin: 0 auto;
 }
 
-input {
+input , select {
     font-size: 0.875rem;
 }
 
@@ -298,6 +298,16 @@ tr:nth-of-type(odd) {
 /* Swal Alert */
 .swal2-confirm.swal2-styled {
     background-color: rgb(110, 133, 177);
+}
+.select_element_edit {
+    position: relative;
+}
+.select_element_edit .btn {
+    position: absolute;
+    right: 0;
+    top: 0;
+    max-width: 80px;
+    padding: 3px;
 }
 
 @keyframes spin {
