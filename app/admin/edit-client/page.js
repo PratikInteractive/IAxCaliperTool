@@ -6,6 +6,9 @@ import axios from "axios";
 // import { useRouter, useSearchParams } from "next/navigation";
 import Select from "react-select";
 import Swal from "sweetalert2";
+import editIcon from "@/app/assets/edit.svg";
+import Image from "next/image";
+import refresh from "@/app/assets/refresh.svg";
 
 export default function EditClientPage() {
 
@@ -22,6 +25,10 @@ export default function EditClientPage() {
   const [selectedIndustry, setSelectedIndustry] = useState(null);
   const [selectedSubIndustry, setSelectedSubIndustry] = useState(null);
   const [industryData, setIndustryData] = useState({});
+  const [changeDetailIndustry, setChangeDetailIndustry] = useState(true);
+  const [changeDetailLocation, setChangeDetailLocation] = useState(true);
+
+
 
   const apiUrl = process.env.NEXT_PUBLIC_API_URL;
   const radiusUnitOptions = [
@@ -128,11 +135,17 @@ export default function EditClientPage() {
 
   const handleIndustryChange = (selectedOption) => {
     setSelectedIndustry(selectedOption);
-    console.log("Selected Industry:", selectedOption); // Log selected industry
+    console.log("Selected Industry:", selectedOption);
+
+    // Update formValues with selected industry
+    setFormValues((prevValues) => ({
+      ...prevValues,
+      industry: selectedOption.value,
+    }));
 
     // Get the sub-industry options for the selected industry
     const subIndustries = industryData[selectedOption.value] || [];
-    console.log("Sub-industries for", selectedOption.value, ":", subIndustries); // Log corresponding sub-industries
+    console.log("Sub-industries for", selectedOption.value, ":", subIndustries);
 
     // Convert sub-industries to the format required by react-select
     const subIndustryOptionsFormatted = subIndustries.map((subIndustry) => ({
@@ -140,10 +153,20 @@ export default function EditClientPage() {
       value: subIndustry,
     }));
 
-    // Update sub-industry options
     setSubIndustryOptions(subIndustryOptionsFormatted);
     setSelectedSubIndustry(null); // Reset sub-industry selection
   };
+
+  const handleSubIndustryChange = (selectedOption) => {
+    setSelectedSubIndustry(selectedOption);
+
+    // Update formValues with selected sub-industry
+    setFormValues((prevValues) => ({
+      ...prevValues,
+      subIndustry: selectedOption?.value || "",
+    }));
+  };
+
 
   // Fetching State and City
   useEffect(() => {
@@ -174,6 +197,12 @@ export default function EditClientPage() {
   const handleStateChange = (selectedOption) => {
     setSelectedState(selectedOption);
 
+    // Update formValues with the selected state
+    setFormValues((prevValues) => ({
+      ...prevValues,
+      state: selectedOption?.value || "",
+    }));
+
     if (selectedOption) {
       const cities = stateData[selectedOption.value] || [];
       const cityOptionsFormatted = cities.map((city) => ({
@@ -184,6 +213,16 @@ export default function EditClientPage() {
       setSubCityOptions(cityOptionsFormatted);
       setSselectedSubCity(null); // Reset city selection
     }
+  };
+
+  const handleCityChange = (selectedOption) => {
+    setSselectedSubCity(selectedOption);
+
+    // Update formValues with the selected city
+    setFormValues((prevValues) => ({
+      ...prevValues,
+      city: selectedOption?.value || "",
+    }));
   };
 
 
@@ -245,6 +284,19 @@ export default function EditClientPage() {
     return <p>No client data found for "{clientName}".</p>;
   }
 
+  const changeIndustryDetails = (e) => {
+    e.preventDefault();
+    console.log("changeIndustryDetails");
+    setChangeDetailIndustry(!changeDetailIndustry);
+  }
+
+
+  const changeLocationsDetails = (e) => {
+    e.preventDefault();
+    // console.log("changeIndustryDetails");
+    setChangeDetailLocation(!changeDetailLocation);
+  }
+
 
 
 
@@ -266,37 +318,143 @@ export default function EditClientPage() {
               readOnly
             />
           </div>
-          <div className="form_element select_form_element">
+          <div className="form_element select_form_element select_element_edit">
             <label>Select Industry</label>
-            <Select
-              options={industryOptions}
-              value={selectedIndustry}
-              onChange={handleIndustryChange}
-              placeholder="Select Industry"
-              styles={{
-                placeholder: (base) => ({
-                  ...base,
-                  display: "block",
-                }),
-              }}
-              required
-            />
+            {
+              changeDetailIndustry ? <input value={formValues.industry} name="industry" /> :
+                <Select
+                  options={industryOptions}
+                  value={selectedIndustry}
+                  onChange={handleIndustryChange}
+                  placeholder="Select Industry"
+                  styles={{
+                    placeholder: (base) => ({
+                      ...base,
+                      display: "block",
+                    }),
+                  }}
+                  required
+                />
+            }
+            <button className="btn" onClick={changeIndustryDetails}>
+              {changeDetailIndustry ? (
+                <>
+                  <Image src={editIcon} width="15" height="15" alt="Edit" />
+                </>
+              ) : (
+                <>
+                  <Image src={refresh} width="15" height="15" alt="Refresh" />
+                </>
+              )}
+            </button>
+
           </div>
 
-          <div className="form_element select_form_element">
+          <div className="form_element select_form_element select_element_edit">
             <label>Select Sub Industry</label>
-            <Select
-              options={subIndustryOptions}
-              value={selectedSubIndustry}
-              onChange={setSelectedSubIndustry}
-              placeholder="Please Select"
-              styles={{
-                placeholder: (base) => ({
-                  ...base,
-                  display: "block",
-                }),
-              }}
+            {
+              changeDetailIndustry ?
+                <input value={formValues.subIndustry} name="subIndustry" /> :
+                <Select
+                  options={subIndustryOptions}
+                  value={selectedSubIndustry}
+                  onChange={handleSubIndustryChange}
+                  placeholder="Please Select Sub Industry"
+                  styles={{
+                    placeholder: (base) => ({
+                      ...base,
+                      display: "block",
+                    }),
+                  }}
+                />}
+                            <button className="btn" onClick={changeIndustryDetails}>
+              {changeDetailIndustry ? (
+                <>
+                  <Image src={editIcon} width="15" height="15" alt="Edit" />
+                </>
+              ) : (
+                <>
+                  <Image src={refresh} width="15" height="15" alt="Refresh" />
+                </>
+              )}
+            </button>
+                
+          </div>
+
+          <div className="form_element">
+            <label>Client Phone Number</label>
+            <input
+              type="tel"
+              name="phoneNumber"
+              placeholder="Phone Number"
+              value={formValues.phoneNumber || ""}
+              onChange={handleChange}
             />
+          </div>
+          <div className="form_element select_form_element select_element_edit">
+            <label>Select State</label>
+            {
+              changeDetailLocation ?
+                <input value={formValues.state} name="state" /> :
+                <Select
+                  options={stateOptions}
+                  value={selectedState}
+                  onChange={handleStateChange}
+                  placeholder="Select State"
+                  styles={{
+                    placeholder: (base) => ({
+                      ...base,
+                      display: "block",
+                    }),
+                  }}
+                  required
+                />
+            }
+            
+            <button className="btn" onClick={changeLocationsDetails}>
+              {changeDetailLocation ? (
+                <>
+                  <Image src={editIcon} width="15" height="15" alt="Edit" />
+                </>
+              ) : (
+                <>
+                  <Image src={refresh} width="15" height="15" alt="Refresh" />
+                </>
+              )}
+            </button>
+          </div>
+
+          <div className="form_element select_form_element select_element_edit">
+            <label>Select City</label>
+            {
+              changeDetailLocation ?
+                <input value={formValues.city} name="city" /> :
+                <Select
+                  options={subCityOptions}
+                  value={selectedSubCity}
+                  onChange={handleCityChange}
+                  placeholder="Please Select a City"
+                  styles={{
+                    placeholder: (base) => ({
+                      ...base,
+                      display: "block",
+                    }),
+                  }}
+                  required
+                />
+            }
+                        <button className="btn" onClick={changeLocationsDetails}>
+              {changeDetailLocation ? (
+                <>
+                  <Image src={editIcon} width="15" height="15" alt="Edit" />
+                </>
+              ) : (
+                <>
+                  <Image src={refresh} width="15" height="15" alt="Refresh" />
+                </>
+              )}
+            </button>
+
           </div>
           <div className="form_element">
             <label>Landing Page URL</label>
@@ -308,50 +466,6 @@ export default function EditClientPage() {
               onChange={handleChange}
             />
           </div>
-          <div className="form_element">
-            <label>Client Phone Number</label>
-            <input
-              type="tel"
-              name="phoneNumber"
-              placeholder="Phone Number"
-              value={formValues.phoneNumber || ""}
-              onChange={handleChange}
-            />
-          </div>
-          <div className="form_element select_form_element">
-            <label>Select State</label>
-            <Select
-              options={stateOptions}
-              value={selectedState}
-              onChange={handleStateChange}
-              placeholder="Select State"
-              styles={{
-                placeholder: (base) => ({
-                  ...base,
-                  display: "block",
-                }),
-              }}
-              required
-            />
-          </div>
-
-          <div className="form_element select_form_element">
-            <label>Select City</label>
-            <Select
-              options={subCityOptions}
-              value={selectedSubCity}
-              onChange={setSselectedSubCity}
-              placeholder="Please Select a City"
-              styles={{
-                placeholder: (base) => ({
-                  ...base,
-                  display: "block",
-                }),
-              }}
-              required
-            />
-          </div>
-
           <div className="form_element">
             <label>Pincode</label>
             <input

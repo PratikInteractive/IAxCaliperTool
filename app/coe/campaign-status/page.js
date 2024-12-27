@@ -309,7 +309,7 @@ const Page = () => {
     if (selectedOptions.some(option => option.value === "select_all")) {
       setFormData({
         ...formData,
-        descriptions: formData.descriptionsOptions || [], 
+        descriptions: formData.descriptionsOptions || [],
       });
     } else {
       setFormData({
@@ -533,6 +533,21 @@ const Page = () => {
               placeholder="Enter Client Name"
             />
           </div>
+          {
+            formData.clientComment ?
+              <div className="form_element">
+                <label>Client Comment</label>
+                <input
+                  type="text"
+                  name="clientComment"
+                  value={formData.clientComment}
+                  onChange={handleChange}
+                  placeholder="Enter Client Comment"
+                  readOnly
+                />
+              </div> : ""
+          }
+
           <div className="form_element">
             <label>Campaign Name</label>
             <input
@@ -592,7 +607,7 @@ const Page = () => {
             />
           </div>
 
-          <div className="form_element">
+          {/* <div className="form_element">
             <label>Landing page URL</label>
             <input
               type="text"
@@ -601,7 +616,7 @@ const Page = () => {
               onChange={handleChange}
               placeholder="Enter Landing Page URL"
             />
-          </div>
+          </div> */}
 
           <div className="form_element">
             <label>Match Type</label>
@@ -748,17 +763,6 @@ const Page = () => {
           </div>
 
           <div className="form_element">
-            <label>Client Comment</label>
-            <input
-              type="text"
-              name="clientComment"
-              value={formData.clientComment}
-              onChange={handleChange}
-              placeholder="Enter Client Comment"
-            />
-          </div>
-
-          <div className="form_element">
             <label>Total Campaign Budget</label>
             <input
               type="text"
@@ -766,6 +770,7 @@ const Page = () => {
               value={formData.totalBudget}
               onChange={handleChange}
               placeholder="Enter Total Budget"
+              readOnly
             />
           </div>
 
@@ -777,20 +782,31 @@ const Page = () => {
               value={dailyBudgetState}
               onChange={handleChange}
               placeholder="Enter Daily Budget"
+              readOnly
             />
           </div>
 
           <div className="form_element">
             <label>Keywords</label>
             <Select
-              options={formData.keywordsOptions}
+              options={[
+                { value: "select_all", label: "Select All" },
+                ...(formData.keywordsOptions || []),
+              ]}
               isMulti
               value={formData.keywords}
               onChange={(selectedOptions) => {
-                setFormData({
-                  ...formData,
-                  keywords: selectedOptions,
-                });
+                if (selectedOptions.some(option => option.value === "select_all")) {
+                  setFormData({
+                    ...formData,
+                    keywords: formData.keywordsOptions || [],
+                  });
+                } else {
+                  setFormData({
+                    ...formData,
+                    keywords: selectedOptions,
+                  });
+                }
               }}
               placeholder="Select Keywords"
               required
@@ -809,6 +825,7 @@ const Page = () => {
               onChange={handleHeadlinesChange}
               placeholder="Select Headlines"
               required
+
             />
           </div>
 
@@ -817,7 +834,7 @@ const Page = () => {
             <Select
               options={[
                 { value: "select_all", label: "Select All" },
-                ...(formData.descriptionsOptions || []), 
+                ...(formData.descriptionsOptions || []),
               ]}
               isMulti
               value={formData.descriptions}
