@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import Select from "react-select";
 import Swal from "sweetalert2";
+import CustomMultiSelect from "@/app/utils/CustomMultiSelect";
 
 const Page = () => {
 
@@ -433,11 +434,21 @@ const Page = () => {
       city,
       pincode,
       objective,
-      keywords: keywords.map((item) => item.value),
+      // keywords: keywords.map((item) => item.value),
+      keywords: Array.isArray(keywords) ? keywords.map((item) => item.value) : [],
       matchType,
       dailyBudget,
     };
 
+    if (!formData.keywords || formData.keywords.length === 0) {
+      Swal.fire({
+          title: "Validation Error",
+          text: "Please select at least one keyword.",
+          icon: "warning",
+          confirmButtonText: "OK",
+      });
+      return;
+  }
 
     if (headlines.length < 3 || headlines.length > 15) {
       Swal.fire({
@@ -788,7 +799,7 @@ const Page = () => {
 
           <div className="form_element">
             <label>Keywords</label>
-            <Select
+            {/* <Select
               options={[
                 { value: "select_all", label: "Select All" },
                 ...(formData.keywordsOptions || []),
@@ -810,7 +821,22 @@ const Page = () => {
               }}
               placeholder="Select Keywords"
               required
+            /> */}
+
+            <CustomMultiSelect
+              options={[
+                ...(formData.keywordsOptions || []),
+              ]}
+              value={formData.keywords}
+              onChange={(selectedOptions) => {
+                setFormData({
+                  ...formData,
+                  keywords: selectedOptions,
+                });
+              }}
+              placeholder="Select Keywords"
             />
+
           </div>
 
           <div className="form_element">

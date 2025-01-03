@@ -11,17 +11,21 @@ const Header = () => {
   const [userName, setUserName] = useState(null); 
   const currentPath = usePathname(); 
   const [is404, setIs404] = useState(false);
+  const [isLoading, setIsLoading] = useState(true); 
 
   useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const storedUser = sessionStorage.getItem('user_id');
-      console.log("Stored USer", storedUser)
-      if (storedUser) {
-        setUserName(storedUser);
-      } else {
-        console.log('No user_id found in sessionStorage');
+    const intervalId = setInterval(() => {
+      if (typeof window !== 'undefined') {
+        const storedUser = sessionStorage.getItem('user_id');
+        if (storedUser) {
+          setUserName(storedUser);
+          setIsLoading(false);
+          clearInterval(intervalId);
+        }
       }
-    }
+    }, 1000);
+
+    return () => clearInterval(intervalId);
   }, []);
 
   useEffect(() => {
@@ -64,10 +68,14 @@ const Header = () => {
             <Image src={logo} width={200} height={80} alt="logo" className={styles.logo_img} />
           </div>
           <div className={styles.menu}>
-            <p onClick={toggleLogout} className={showLogout ? `${styles.toggled}` : ''}>
-              {/* User: {userName || 'Guest'} */}
-              Welcome User
-            </p>
+          {isLoading ? (
+              <p>Loading...</p> // Show a loading indicator while fetching the username
+            ) : (
+              <p onClick={toggleLogout} className={showLogout ? `${styles.toggled}` : ''}>
+                User: {userName || 'Guest'} 
+                {/* Welcome User */}
+              </p>
+            )}
             {showLogout && <span className={styles.logoutbtn} onClick={logout}>Logout</span>}
           </div>
         </div>

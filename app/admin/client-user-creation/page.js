@@ -4,10 +4,11 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import Select from "react-select";
 import Swal from "sweetalert2";
+import CustomMultiSelect from "@/app/utils/CustomMultiSelect";
 
 const Page = () => {
 
-  
+
   const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 
   const [formData, setFormData] = useState({
@@ -67,6 +68,16 @@ const Page = () => {
     console.log("userId", userId);
     if (!userId) {
       console.error("User ID is not available.");
+      return;
+    }
+
+    if (!formData.keywords || formData.keywords.length === 0) {
+      Swal.fire({
+        title: "Validation Error",
+        text: "Please select at least one keyword.",
+        icon: "warning",
+        confirmButtonText: "OK",
+      });
       return;
     }
 
@@ -159,7 +170,7 @@ const Page = () => {
   useEffect(() => {
     const fetchKeywords = async () => {
       try {
-        const storedUserId = sessionStorage.getItem("user_id"); 
+        const storedUserId = sessionStorage.getItem("user_id");
         const response = await axios.post(
           `${apiUrl}caliper/digitalEntrant/caliperSelfServeApi.jsp?action=viewKeywords`,
           {
@@ -174,15 +185,15 @@ const Page = () => {
 
         if (response.data.result === "success") {
           console.log("Fetched Keywords details:", response.data);
-        const fetchedKeywords = response.data.caliperBaseKeywords?.null?.map(
-          (item) => ({
-            value: item.keyword,
-            label: `${item.keyword}`,
-            searchVolume: item.searchVolume, 
-          })
-        );
+          const fetchedKeywords = response.data.caliperBaseKeywords?.null?.map(
+            (item) => ({
+              value: item.keyword,
+              label: `${item.keyword}`,
+              searchVolume: item.searchVolume,
+            })
+          );
 
-        setKeywordOptions(fetchedKeywords || []); 
+          setKeywordOptions(fetchedKeywords || []);
         } else {
           console.error("Error:", response.data.message);
         }
@@ -264,7 +275,7 @@ const Page = () => {
             />
           </div>
 
-          
+
           <div className="form_element">
             <label>Client Code:</label>
             <input
@@ -276,7 +287,7 @@ const Page = () => {
               placeholder="Please Enter (required)"
             />
           </div>
-        
+
 
 
           <div className="form_element">
@@ -303,7 +314,7 @@ const Page = () => {
           </div>
           <div className="form_element select_form_element">
             <label>Select Keywords</label>
-            <Select
+            {/* <Select
               isMulti
               options={keywordOptions}
               onChange={(selectedOptions) =>
@@ -317,6 +328,12 @@ const Page = () => {
                 }),
               }}
               required
+            /> */}
+            <CustomMultiSelect
+              options={keywordOptions}
+              onChange={(selectedOptions) =>
+                handleSelectChange("keywords", selectedOptions)
+              }
             />
           </div>
           <div className="form_element submit_btn_element">
